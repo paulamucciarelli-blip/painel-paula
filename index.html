@@ -1898,15 +1898,7 @@ function render(){
 loadFromFirebase();
 
 // ── UNSAVED CHANGES WARNING ───────────────────────────────────────
-// Auto-save active - warn only if Firebase save is in progress
-window.addEventListener('beforeunload', function(e){
-  if(_autoSaveTimer){
-    const msg = 'Salvamento em andamento! Aguarde um momento antes de fechar.';
-    e.preventDefault();
-    e.returnValue = msg;
-    return msg;
-  }
-});
+// Auto-save active via Firebase - no beforeunload warning needed
 
 // Also warn when navigating away
 document.addEventListener('visibilitychange', function(){
