@@ -763,6 +763,7 @@ function renderList(){
             <span class="act-date">${fmt(xlDate(sub.fim))}</span>${alertBadge(sub)}
             <button class="add-pill-light" onclick="event.stopPropagation();openAdd('acao','${snum}')">+ Ação</button>
             <button class="edit-btn-light" onclick="event.stopPropagation();startEdit(${sub.id})">✏</button>
+                <button onclick="event.stopPropagation();deleteItem(${sub.id})" style="background:#fce8e6;border:none;border-radius:5px;padding:2px 7px;color:#c5221f;font-size:10px;font-weight:700;cursor:pointer" title="Excluir subprojeto">🗑</button>
           </div>
           ${EDIT_ID===sub.id?editPanelHtml(EDIT_DRAFT,false,46):''}
           ${ADD_CTX&&ADD_CTX.type==='acao'&&ADD_CTX.prefix===snum?addFormHtml('Ação',nextNum(DATA,snum),snum,'acao',false,60):''}`;
@@ -1056,6 +1057,7 @@ function renderCanceled(){
             ${avChip(sub.resp)}${progBar(sub.pct)}${badge(sub.status)}
             <span class="act-date">${fmt(xlDate(sub.fim))}</span>
             <button class="edit-btn-light" onclick="event.stopPropagation();startEdit(${sub.id})">✏</button>
+                <button onclick="event.stopPropagation();deleteItem(${sub.id})" style="background:#fce8e6;border:none;border-radius:5px;padding:2px 7px;color:#c5221f;font-size:10px;font-weight:700;cursor:pointer" title="Excluir subprojeto">🗑</button>
           </div>
           ${EDIT_ID===sub.id?editPanelHtml(EDIT_DRAFT,false,46):''}`;
         if(subOpen){
