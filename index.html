@@ -121,7 +121,7 @@ input,select,textarea{font-family:inherit;font-size:12px}
   </div>
   <div style="display:flex;align-items:center;gap:10px">
     <div id="save-indicator" style="display:none;align-items:center;padding:4px 10px;border-radius:8px;font-size:11px;font-weight:700"></div>
-    <button onclick="saveToFirebase()" style="background:#34a853;color:#fff;border:none;border-radius:7px;padding:5px 14px;font-size:12px;font-weight:800;cursor:pointer">☁️ Salvar</button>
+    <button onclick="saveToFirebase()" style="background:#34a853;color:#fff;border:none;border-radius:7px;padding:5px 14px;font-size:12px;font-weight:800;cursor:pointer" title="Salvamento automático ativo — clique para forçar salvamento">☁️ Auto-salvo</button>
   </div>
   <div id="nav">
     <button class="nav-btn active" onclick="setView('dashboard')">📊 Visão Geral</button>
@@ -1762,10 +1762,16 @@ function exportAudit(){
 
 
 // ── PERSISTENT SAVE (embed in HTML file) ─────────────────────────
+let _autoSaveTimer = null;
 function save(){
+  // Save to localStorage immediately
   try{ localStorage.setItem('paula_v17', JSON.stringify(DATA)); }catch(e){}
-  window._pendingChanges = true;
-  saveToFirebase();
+  // Show saving indicator
+  const el = document.getElementById('save-indicator');
+  if(el){ el.style.display='flex'; el.textContent='⏳ Salvando...'; el.style.background='#e8f0fe'; el.style.color='#1a56cc'; }
+  // Debounce Firebase save - wait 1.5s after last change
+  clearTimeout(_autoSaveTimer);
+  _autoSaveTimer = setTimeout(()=>{ saveToFirebase(); }, 1500);
 }
 
 function saveToFirebase(){
@@ -1892,10 +1898,10 @@ function render(){
 loadFromFirebase();
 
 // ── UNSAVED CHANGES WARNING ───────────────────────────────────────
-// Warn when closing with unsaved changes
+// Auto-save active - warn only if Firebase save is in progress
 window.addEventListener('beforeunload', function(e){
-  if(window._pendingChanges){
-    const msg = 'Você tem alterações não salvas! Clique em ☁️ Salvar antes de sair.';
+  if(_autoSaveTimer){
+    const msg = 'Salvamento em andamento! Aguarde um momento antes de fechar.';
     e.preventDefault();
     e.returnValue = msg;
     return msg;
