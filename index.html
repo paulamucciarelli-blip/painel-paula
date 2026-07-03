@@ -1200,9 +1200,23 @@ function deleteItem(id){
       DATA = DATA.filter(d => d.id !== id);
     }
     if(EDIT_ID === id) EDIT_ID = null;
-    saveToFirebase();
-    toast('Item excluído!');
-    render();
+    // Save immediately and wait for confirmation
+    const saveEl = document.getElementById('save-indicator');
+    if(saveEl){ saveEl.style.display='flex'; saveEl.textContent='⏳ Excluindo e salvando...'; saveEl.style.background='#fce8e6'; saveEl.style.color='#c5221f'; }
+    db.collection('painel').doc('dados').set({
+      data: DATA,
+      audit: AUDIT_LOG,
+      canceled: [...CANCELED_PROJECTS],
+      updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+    }).then(()=>{
+      if(saveEl){ saveEl.textContent='✓ Excluído e salvo!'; saveEl.style.background='#e6f4ea'; saveEl.style.color='#1a7a34'; setTimeout(()=>saveEl.style.display='none',3000); }
+      toast('Item excluído!');
+      render();
+    }).catch(err=>{
+      if(saveEl){ saveEl.textContent='⚠ Erro ao salvar: '+err.message; saveEl.style.background='#fce8e6'; saveEl.style.color='#c5221f'; }
+      toast('Item excluído localmente - erro ao salvar na nuvem','err');
+      render();
+    });
   };
 }
 
