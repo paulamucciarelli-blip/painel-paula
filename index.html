@@ -489,8 +489,8 @@ function renderDashboard(){
 
   <!-- OVERALL PROGRESS HERO -->
   ${(()=>{
-    const govProjs = projects.filter(p=>!CANCELED_PROJECTS.has(p.num)&&(p.tipo||'governanca')==='governanca');
-    const rotProjs = projects.filter(p=>!CANCELED_PROJECTS.has(p.num)&&p.tipo==='rotina');
+    const govProjs = projects.filter(p=>!CANCELED_PROJECTS.has(String(p.num))&&(p.tipo||'governanca')==='governanca');
+    const rotProjs = projects.filter(p=>!CANCELED_PROJECTS.has(String(p.num))&&p.tipo==='rotina');
     const govPct = govProjs.length ? Math.round(govProjs.reduce((a,p)=>a+(p.pct||0),0)/govProjs.length*100) : 0;
     const rotPct = rotProjs.length ? Math.round(rotProjs.reduce((a,p)=>a+(p.pct||0),0)/rotProjs.length*100) : 0;
     return `<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:18px">
@@ -699,7 +699,7 @@ function renderList(){
   // auto-expand when searching
   if(FL_SEARCH){
     projNums.forEach(pnum=>{
-      if(CANCELED_PROJECTS.has(pnum)) return;
+      if(CANCELED_PROJECTS.has(String(pnum))) return;
       const allKids = DATA.filter(d=>getProject(d.num)===pnum);
       if(allKids.some(d=>itemVisible(d))){
         EXPANDED['p_'+pnum] = true;
@@ -713,7 +713,7 @@ function renderList(){
 
   let anyVisible=false;
   projNums.forEach(pnum=>{
-    if(CANCELED_PROJECTS.has(pnum)) return; // hidden — shown in Cancelados tab
+    if(CANCELED_PROJECTS.has(String(pnum))) return; // hidden — shown in Cancelados tab
     if(!projVisible(pnum)) return;
     const proj=DATA.find(d=>d.num===pnum); if(!proj) return;
     // check if project itself or any child passes filter
@@ -1116,8 +1116,9 @@ function restoreProject(pnum){
 }
 
 function moveToCancel(pnum){
-  CANCELED_PROJECTS.add(pnum);
-  saveToFirebase(); // direct save, no debounce
+  CANCELED_PROJECTS.add(String(pnum));
+  console.log('Moving to cancel:', pnum, 'CANCELED now:', [...CANCELED_PROJECTS]);
+  saveToFirebase();
   toast(`Projeto ${pnum} movido para Cancelados!`);
   render();
 }
