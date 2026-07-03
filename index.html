@@ -1110,12 +1110,14 @@ function renderCanceled(){
 
 function restoreProject(pnum){
   CANCELED_PROJECTS.delete(pnum);
+  save();
   toast(`Projeto ${pnum} restaurado para Projetos!`);
   render();
 }
 
 function moveToCancel(pnum){
   CANCELED_PROJECTS.add(pnum);
+  save();
   toast(`Projeto ${pnum} movido para Cancelados!`);
   render();
 }
@@ -1784,8 +1786,8 @@ function saveToFirebase(){
     updatedAt: firebase.firestore.FieldValue.serverTimestamp()
   })
   .then(()=>{
-    window._pendingChanges = false;
-    if(el){ window._pendingChanges=false; el.textContent='✓ Salvo na nuvem'; el.style.background='#e6f4ea'; el.style.color='#1a7a34';
+    _autoSaveTimer = null;
+    if(el){ el.textContent='✓ Salvo na nuvem'; el.style.background='#e6f4ea'; el.style.color='#1a7a34';
       setTimeout(()=>{ el.style.display='none'; }, 3000); }
   })
   .catch(err=>{
@@ -1803,8 +1805,8 @@ function saveToFirebase(){
     updatedAt: firebase.firestore.FieldValue.serverTimestamp()
   })
   .then(()=>{
-    window._pendingChanges = false;
-    if(el){ window._pendingChanges=false; el.textContent='✓ Salvo na nuvem'; el.style.background='#e6f4ea'; el.style.color='#1a7a34';
+    _autoSaveTimer = null;
+    if(el){ el.textContent='✓ Salvo na nuvem'; el.style.background='#e6f4ea'; el.style.color='#1a7a34';
       setTimeout(()=>{ el.style.display='none'; }, 3000); }
   })
   .catch(err=>{
@@ -1814,19 +1816,9 @@ function saveToFirebase(){
 
 function saveAudit(){
   try{ localStorage.setItem('paula_audit', JSON.stringify(AUDIT_LOG)); }catch(e){}
-  window._pendingChanges = true;
-  updateSaveIndicator();
 }
 
-function updateSaveIndicator(){
-  const el = document.getElementById('save-indicator');
-  if(el){
-    el.style.display = 'flex';
-    el.style.background = '#fff8e1';
-    el.style.color = '#b06000';
-    el.textContent = '● Alterações não salvas — clique em Salvar Arquivo';
-  }
-}
+// updateSaveIndicator removed
 
 function downloadUpdatedFile(){
   // No longer needed - data is saved to Firebase automatically
@@ -1900,20 +1892,7 @@ loadFromFirebase();
 // ── UNSAVED CHANGES WARNING ───────────────────────────────────────
 // Auto-save active via Firebase - no beforeunload warning needed
 
-// Also warn when navigating away
-document.addEventListener('visibilitychange', function(){
-  if(document.visibilityState === 'hidden' && window._pendingChanges){
-    // Try to show save indicator prominently
-    const el = document.getElementById('save-indicator');
-    if(el){
-      el.style.display = 'flex';
-      el.style.background = '#fce8e6';
-      el.style.color = '#c5221f';
-      el.style.fontWeight = '800';
-      el.textContent = '⚠ Alterações não salvas! Clique em 💾 Salvar Arquivo';
-    }
-  }
-});
+// visibilitychange removed - auto-save active
 </script>
 </body>
 </html>
