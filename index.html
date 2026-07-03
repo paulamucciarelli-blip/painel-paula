@@ -1110,14 +1110,14 @@ function renderCanceled(){
 
 function restoreProject(pnum){
   CANCELED_PROJECTS.delete(pnum);
-  save();
+  saveToFirebase(); // direct save, no debounce
   toast(`Projeto ${pnum} restaurado para Projetos!`);
   render();
 }
 
 function moveToCancel(pnum){
   CANCELED_PROJECTS.add(pnum);
-  save();
+  saveToFirebase(); // direct save, no debounce
   toast(`Projeto ${pnum} movido para Cancelados!`);
   render();
 }
@@ -1192,7 +1192,7 @@ function deleteItem(id){
     logChange('EXCLUSÃO', item, [{campo:'Status', de:item.status, para:'—'},{campo:'Responsável', de:item.resp||'—', para:'—'}]);
     DATA = DATA.filter(d => d.id !== id);
     if(EDIT_ID === id) EDIT_ID = null;
-    save();
+    saveToFirebase(); // direct save, no debounce
     toast('Item excluído!');
     render();
   };
