@@ -1180,7 +1180,7 @@ function deleteItem(id){
   overlay.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.5);z-index:99999;display:flex;align-items:center;justify-content:center';
   overlay.innerHTML = `<div style="background:#fff;border-radius:14px;padding:28px 32px;max-width:420px;width:90%;box-shadow:0 8px 40px rgba(0,0,0,.25)">
     <div style="font-weight:800;font-size:15px;margin-bottom:8px;color:#c5221f">🗑 Excluir item?</div>
-    <div style="font-size:13px;color:#3c4043;margin-bottom:20px;line-height:1.5"><strong>${item.num}</strong> — ${item.nome}</div>
+    <div style="font-size:13px;color:#3c4043;margin-bottom:20px;line-height:1.5"><strong>${item.num}</strong> — ${item.nome}${isSubproject(item.num)?'<br><span style="color:#c5221f;font-size:12px">⚠ Todas as ações deste subprojeto também serão excluídas.</span>':''}</div>
     <div style="display:flex;gap:10px;justify-content:flex-end">
       <button id="del-cancel" style="background:#f1f3f4;border:none;border-radius:8px;padding:8px 20px;font-size:13px;font-weight:700;cursor:pointer">Cancelar</button>
       <button id="del-confirm" style="background:#c5221f;color:#fff;border:none;border-radius:8px;padding:8px 20px;font-size:13px;font-weight:700;cursor:pointer">Excluir</button>
@@ -1191,9 +1191,16 @@ function deleteItem(id){
   document.getElementById('del-confirm').onclick = () => {
     document.body.removeChild(overlay);
     logChange('EXCLUSÃO', item, [{campo:'Status', de:item.status, para:'—'},{campo:'Responsável', de:item.resp||'—', para:'—'}]);
-    DATA = DATA.filter(d => d.id !== id);
+    // If deleting a subproject, also delete all its children
+    if(isSubproject(item.num)){
+      const children = DATA.filter(d => d.num.startsWith(item.num + '.'));
+      children.forEach(c => logChange('EXCLUSÃO', c, [{campo:'Status', de:c.status, para:'—'}]));
+      DATA = DATA.filter(d => d.id !== id && !d.num.startsWith(item.num + '.'));
+    } else {
+      DATA = DATA.filter(d => d.id !== id);
+    }
     if(EDIT_ID === id) EDIT_ID = null;
-    saveToFirebase(); // direct save, no debounce
+    saveToFirebase();
     toast('Item excluído!');
     render();
   };
