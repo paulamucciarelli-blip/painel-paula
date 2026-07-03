@@ -129,6 +129,7 @@ input,select,textarea{font-family:inherit;font-size:12px}
     <button class="nav-btn" onclick="setView('canceled')">🚫 Cancelados</button>
     <button class="nav-btn" onclick="setView('cronograma')">📅 Cronograma</button>
     <button class="nav-btn" onclick="setView('historico')">📋 Histórico</button>
+    <button class="nav-btn" onclick="setView('gerencial')">📊 Gerencial</button>
   </div>
 </div>
 <div id="toast"></div>
@@ -1124,6 +1125,7 @@ function moveToCancel(pnum){
 }
 
 window.CHART_DRILL = null;
+let DASH_G_TIPO = 'all'; // gerencial filter
 window.HIGHLIGHT_ID = null;
 window.HIST_FILTER_TYPE = 'all';
 window.HIST_FILTER_DATE = '';
@@ -1246,6 +1248,7 @@ function navigateToListFilter(projNum, status){
 function toggleChartDrill(nameKey, status){
   if(window.CHART_DRILL && window.CHART_DRILL.nameKey===nameKey && window.CHART_DRILL.status===status){
     window.CHART_DRILL = null;
+let DASH_G_TIPO = 'all'; // gerencial filter
 window.HIGHLIGHT_ID = null;
 window.HIST_FILTER_TYPE = 'all';
 window.HIST_FILTER_DATE = '';
@@ -1869,10 +1872,223 @@ function buildAndDownload(){
 
 // fixRespNames removed - using 'Paula' as standard name
 
+
+function renderGerencial(){
+  const allProjs = DATA.filter(d=>isProject(d.num)&&!CANCELED_PROJECTS.has(String(d.num)));
+
+  // apply tipo filter
+  const projs = DASH_G_TIPO==='all' ? allProjs : allProjs.filter(p=>(p.tipo||'governanca')===DASH_G_TIPO);
+  const items = DATA.filter(d=>!CANCELED_PROJECTS.has(String(getProject(d.num))) &&
+    (DASH_G_TIPO==='all' || (DATA.find(p=>p.num===getProject(d.num))?.tipo||'governanca')===DASH_G_TIPO));
+
+  // Status counts
+  const statusCounts = {};
+  ALL_STATUSES.forEach(s=>{ statusCounts[s]=items.filter(i=>i.status===s).length; });
+  const totalItems = items.length;
+
+  // Resp data
+  const respMap = {};
+  items.filter(i=>i.resp&&i.resp.trim()).forEach(i=>{
+    const r=i.resp.trim();
+    if(!respMap[r]) respMap[r]={total:0,concluida:0,andamento:0,atrasada:0,nao:0};
+    respMap[r].total++;
+    if(i.status==='Concluída') respMap[r].concluida++;
+    else if(i.status==='Em andamento') respMap[r].andamento++;
+    else if(i.status==='Atrasada') respMap[r].atrasada++;
+    else if(i.status==='Não iniciada') respMap[r].nao++;
+  });
+  const respNames = Object.keys(respMap).sort();
+
+  // Gantt data - projects with dates
+  const ganttProjs = projs.filter(p=>p.ini&&p.fim).sort((a,b)=>a.ini-b.ini);
+  const ganttAll  = projs.sort((a,b)=>+a.num-+b.num);
+
+  // tipo filter pills
+  const tipoPills = ['all','governanca','rotina'].map(t=>{
+    const active=DASH_G_TIPO===t;
+    const bg=active?(t==='rotina'?'#1a6644':'#1a3a5c'):'#f1f3f4';
+    const tx=active?'#fff':'#5f6368';
+    const lbl=t==='all'?'Todos':t==='governanca'?'GOVERNANÇA':'ROTINA';
+    return `<button onclick="setGTipo('${t}')" style="padding:4px 14px;border:none;border-radius:20px;font-size:11px;font-weight:700;cursor:pointer;background:${bg};color:${tx}">${lbl}</button>`;
+  }).join('');
+
+  // ── DONUT CHART (SVG) ─────────────────────────────────────────
+  const donutColors = {'Concluída':'#34a853','Em andamento':'#4285f4','Atrasada':'#ea4335','Não iniciada':'#9aa0a6','Standby':'#fbbc04','Cancelada':'#ab47bc'};
+  const donutData = ALL_STATUSES.map(s=>({s,v:statusCounts[s]||0,c:donutColors[s]})).filter(d=>d.v>0);
+  const total2 = donutData.reduce((a,d)=>a+d.v,0);
+  let donutSVG = '';
+  let angle = -Math.PI/2;
+  const cx=120,cy=120,r=80,ri=50;
+  donutData.forEach(d=>{
+    const sweep = (d.v/total2)*2*Math.PI;
+    const x1=cx+r*Math.cos(angle), y1=cy+r*Math.sin(angle);
+    const x2=cx+r*Math.cos(angle+sweep), y2=cy+r*Math.sin(angle+sweep);
+    const xi1=cx+ri*Math.cos(angle), yi1=cy+ri*Math.sin(angle);
+    const xi2=cx+ri*Math.cos(angle+sweep), yi2=cy+ri*Math.sin(angle+sweep);
+    const large=sweep>Math.PI?1:0;
+    const pct=Math.round(d.v/total2*100);
+    donutSVG+=`<path d="M${xi1.toFixed(1)},${yi1.toFixed(1)} L${x1.toFixed(1)},${y1.toFixed(1)} A${r},${r} 0 ${large},1 ${x2.toFixed(1)},${y2.toFixed(1)} L${xi2.toFixed(1)},${yi2.toFixed(1)} A${ri},${ri} 0 ${large},0 ${xi1.toFixed(1)},${yi1.toFixed(1)} Z"
+      fill="${d.c}" opacity="0.9" style="cursor:pointer;transition:opacity .2s"
+      onmouseover="this.style.opacity='1';document.getElementById('donut-tip').textContent='${esc(d.s)}: ${d.v} (${pct}%)'"
+      onmouseout="this.style.opacity='0.9';document.getElementById('donut-tip').textContent=''"
+      onclick="navigateToListFilter('all','${d.s}')"/>`;
+    angle+=sweep;
+  });
+  // Legend
+  let legend='';
+  donutData.forEach(d=>{
+    const pct=Math.round(d.v/total2*100);
+    legend+=`<div style="display:flex;align-items:center;gap:6px;margin-bottom:4px;cursor:pointer" onclick="navigateToListFilter('all','${d.s}')">
+      <span style="width:10px;height:10px;border-radius:50%;background:${d.c};flex-shrink:0;display:inline-block"></span>
+      <span style="font-size:11px;color:#3c4043">${esc(d.s)}</span>
+      <span style="font-size:11px;font-weight:700;color:#1c1e21;margin-left:auto">${d.v} <span style="color:#9aa0a6;font-weight:400">(${pct}%)</span></span>
+    </div>`;
+  });
+
+  // ── BAR CHART (Responsáveis) ──────────────────────────────────
+  const maxBar = Math.max(...respNames.map(r=>respMap[r].total),1);
+  const BAR_W=500, BAR_H_EACH=28, BAR_GAP=8, LABEL_W=100;
+  const barH = respNames.length*(BAR_H_EACH+BAR_GAP)+20;
+  let barSVG='';
+  respNames.forEach((name,i)=>{
+    const d=respMap[name];
+    const y=20+i*(BAR_H_EACH+BAR_GAP);
+    const av=avatar(name);
+    barSVG+=`<text x="${LABEL_W-6}" y="${y+BAR_H_EACH/2+4}" text-anchor="end" font-size="11" font-weight="700" fill="#1c1e21">${esc(name.split(' ')[0])}</text>`;
+    let x=0;
+    [['concluida','#34a853'],['andamento','#4285f4'],['atrasada','#ea4335'],['nao','#9aa0a6']].forEach(([k,col])=>{
+      const cnt=d[k]; if(!cnt) return;
+      const w=Math.round((cnt/maxBar)*BAR_W);
+      const status=k==='concluida'?'Concluída':k==='andamento'?'Em andamento':k==='atrasada'?'Atrasada':'Não iniciada';
+      barSVG+=`<rect x="${LABEL_W+x}" y="${y}" width="${w}" height="${BAR_H_EACH}" fill="${col}" rx="3" style="cursor:pointer;transition:opacity .2s"
+        onmouseover="this.style.opacity='.7';document.getElementById('bar-tip').textContent='${esc(name)}: ${cnt} ${esc(status)}'"
+        onmouseout="this.style.opacity='1';document.getElementById('bar-tip').textContent=''"
+        onclick="filterByResp('${esc(name)}')"/>`;
+      if(w>18) barSVG+=`<text x="${LABEL_W+x+w/2}" y="${y+BAR_H_EACH/2+4}" text-anchor="middle" font-size="10" font-weight="700" fill="white" pointer-events="none">${cnt}</text>`;
+      x+=w;
+    });
+    barSVG+=`<text x="${LABEL_W+x+6}" y="${y+BAR_H_EACH/2+4}" font-size="10" fill="#5f6368">${d.total}</text>`;
+  });
+
+  // ── GANTT CHART ───────────────────────────────────────────────
+  const EPOCH = new Date(1899,11,30);
+  const today = (new Date()-EPOCH)/86400000;
+  const ganttItems = ganttAll.filter(p=>p.fim);
+  const minDate = ganttItems.length ? Math.min(...ganttItems.map(p=>p.ini||p.fim)) : today-30;
+  const maxDate = ganttItems.length ? Math.max(...ganttItems.map(p=>p.fim)) : today+30;
+  const span = Math.max(maxDate-minDate, 1);
+  const GCHART_W=580, GLABEL_W=140, GROW_H=22, GGAP=6;
+  const gH = ganttItems.length*(GROW_H+GGAP)+40;
+
+  let ganttSVG='';
+  // Today line
+  const todayX = GLABEL_W + Math.round((today-minDate)/span*GCHART_W);
+  ganttSVG+=`<line x1="${todayX}" y1="0" x2="${todayX}" y2="${gH}" stroke="#ea4335" stroke-width="1.5" stroke-dasharray="4"/>`;
+  ganttSVG+=`<text x="${todayX+3}" y="12" font-size="9" fill="#ea4335">Hoje</text>`;
+
+  ganttItems.forEach((p,i)=>{
+    const y=20+i*(GROW_H+GGAP);
+    const ini=p.ini||p.fim;
+    const x1=GLABEL_W+Math.round((ini-minDate)/span*GCHART_W);
+    const x2=GLABEL_W+Math.round((p.fim-minDate)/span*GCHART_W);
+    const w=Math.max(x2-x1,4);
+    const pct=Math.round((p.pct||0)*100);
+    const col=(p.tipo||'governanca')==='rotina'?'#1a6644':'#1a3a5c';
+    const late=p.fim<today&&p.status!=='Concluída';
+    ganttSVG+=`<text x="${GLABEL_W-4}" y="${y+GROW_H/2+4}" text-anchor="end" font-size="10" fill="#1c1e21" style="cursor:pointer" onclick="navigateToProjGantt('${p.num}')">${esc(p.num)} ${esc(p.nome.slice(0,18))}${p.nome.length>18?'…':''}</text>`;
+    ganttSVG+=`<rect x="${GLABEL_W}" y="${y}" width="${GCHART_W}" height="${GROW_H}" fill="#f1f3f4" rx="3"/>`;
+    ganttSVG+=`<rect x="${x1}" y="${y}" width="${w}" height="${GROW_H}" fill="${late?'#ea4335':col}" rx="3" opacity="0.85" style="cursor:pointer;transition:opacity .2s"
+      onmouseover="this.style.opacity='1';document.getElementById('gantt-tip').textContent='${esc(p.nome)} — ${pct}% — ${esc(p.status)}'"
+      onmouseout="this.style.opacity='.85';document.getElementById('gantt-tip').textContent=''"
+      onclick="navigateToProjGantt('${p.num}')"/>`;
+    if(w>20) ganttSVG+=`<text x="${x1+w/2}" y="${y+GROW_H/2+4}" text-anchor="middle" font-size="9" fill="white" pointer-events="none">${pct}%</text>`;
+  });
+
+  return `<div style="font-weight:800;font-size:16px;margin-bottom:14px">📊 Dashboard Gerencial</div>
+
+  <div style="display:flex;gap:8px;margin-bottom:18px;align-items:center">
+    <span style="font-size:12px;font-weight:700;color:#5f6368">Tipo:</span>
+    ${tipoPills}
+  </div>
+
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px">
+
+    <!-- DONUT -->
+    <div class="card">
+      <div class="card-title">Distribuição por Status</div>
+      <div style="display:flex;align-items:center;gap:16px">
+        <div style="position:relative;flex-shrink:0">
+          <svg width="240" height="240" viewBox="0 0 240 240">
+            ${donutSVG}
+            <text x="120" y="115" text-anchor="middle" font-size="22" font-weight="900" fill="#1c1e21">${totalItems}</text>
+            <text x="120" y="133" text-anchor="middle" font-size="11" fill="#9aa0a6">itens</text>
+          </svg>
+        </div>
+        <div style="flex:1">${legend}
+          <div id="donut-tip" style="margin-top:8px;font-size:11px;color:#1a56cc;font-weight:600;min-height:16px"></div>
+          <div style="margin-top:8px;font-size:10px;color:#9aa0a6">Clique em um segmento para filtrar</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- RESP BARS -->
+    <div class="card">
+      <div class="card-title">Progresso por Responsável</div>
+      <div style="display:flex;gap:10px;margin-bottom:8px;flex-wrap:wrap">
+        ${[['#34a853','Concluída'],['#4285f4','Em andamento'],['#ea4335','Atrasada'],['#9aa0a6','Não iniciada']].map(([c,l])=>`<span style="display:flex;align-items:center;gap:4px;font-size:10px"><span style="width:8px;height:8px;border-radius:50%;background:${c};display:inline-block"></span>${esc(l)}</span>`).join('')}
+      </div>
+      <div style="overflow-x:auto">
+        <svg width="${LABEL_W+BAR_W+40}" height="${barH}" viewBox="0 0 ${LABEL_W+BAR_W+40} ${barH}">
+          ${barSVG}
+        </svg>
+      </div>
+      <div id="bar-tip" style="font-size:11px;color:#1a56cc;font-weight:600;min-height:16px;margin-top:4px"></div>
+      <div style="font-size:10px;color:#9aa0a6;margin-top:4px">Clique em uma barra para filtrar por responsável</div>
+    </div>
+  </div>
+
+  <!-- GANTT -->
+  <div class="card">
+    <div class="card-title">📅 Linha do Tempo dos Projetos</div>
+    <div style="overflow-x:auto">
+      <svg width="${GLABEL_W+GCHART_W+20}" height="${gH}" viewBox="0 0 ${GLABEL_W+GCHART_W+20} ${gH}" style="display:block">
+        ${ganttSVG}
+      </svg>
+    </div>
+    <div id="gantt-tip" style="font-size:11px;color:#1a56cc;font-weight:600;min-height:16px;margin-top:8px"></div>
+    <div style="display:flex;gap:12px;margin-top:8px;flex-wrap:wrap">
+      <span style="display:flex;align-items:center;gap:4px;font-size:10px"><span style="width:10px;height:10px;background:#1a3a5c;border-radius:2px;display:inline-block"></span>Governança</span>
+      <span style="display:flex;align-items:center;gap:4px;font-size:10px"><span style="width:10px;height:10px;background:#1a6644;border-radius:2px;display:inline-block"></span>Rotina</span>
+      <span style="display:flex;align-items:center;gap:4px;font-size:10px"><span style="width:10px;height:10px;background:#ea4335;border-radius:2px;display:inline-block"></span>Atrasado</span>
+      <span style="display:flex;align-items:center;gap:4px;font-size:10px"><span style="width:2px;height:12px;background:#ea4335;display:inline-block"></span>Hoje</span>
+      <div style="font-size:10px;color:#9aa0a6;margin-left:auto">Clique em uma barra para ir ao projeto</div>
+    </div>
+  </div>`;
+}
+
+function setGTipo(t){ DASH_G_TIPO=t; render(); }
+
+function navigateToProjGantt(pnum){
+  FL_STATUS = new Set(ALL_STATUSES);
+  FL_RESP = new Set();
+  EXPANDED['p_'+pnum] = true;
+  setView('list');
+  setTimeout(()=>{
+    const el = document.getElementById('item-'+DATA.find(d=>d.num===pnum)?.id);
+    if(el){ el.scrollIntoView({behavior:'smooth',block:'center'}); el.style.transition='background .3s'; el.style.background='#fff9c4'; setTimeout(()=>el.style.background='',2500); }
+  },200);
+}
+
+function filterByResp(name){
+  FL_RESP = new Set([name]);
+  FL_STATUS = new Set(ALL_STATUSES);
+  setView('list');
+}
+
 // ── main render ───────────────────────────────────────────────────
 function render(){
   document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
-  const idx={dashboard:0,list:1,alerts:2,resp:3,canceled:4,cronograma:5,historico:6}[VIEW]||0;
+  const idx={dashboard:0,list:1,alerts:2,resp:3,canceled:4,cronograma:5,historico:6,gerencial:7}[VIEW]||0;
   document.querySelectorAll('.nav-btn')[idx]?.classList.add('active');
   const alerts=DATA.filter(d=>{
     if(d.status==='Concluída'||d.status==='Cancelada') return false;
@@ -1887,6 +2103,7 @@ function render(){
   else if(VIEW==='canceled') html=renderCanceled();
   else if(VIEW==='cronograma') html=renderCronograma();
   else if(VIEW==='historico') html=renderHistorico();
+  else if(VIEW==='gerencial') html=renderGerencial();
   else html=renderList();
   document.getElementById('content').innerHTML=html;
 }
