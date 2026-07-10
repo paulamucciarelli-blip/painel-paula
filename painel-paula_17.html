@@ -1,0 +1,2119 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Painel Paula Ortolani</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f0f2f5;color:#1c1e21;font-size:13px}
+button{cursor:pointer;font-family:inherit}
+input,select,textarea{font-family:inherit;font-size:12px}
+#header{background:#fff;border-bottom:1px solid #e0e3e8;padding:0 20px;height:56px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
+#header-left{display:flex;align-items:center;gap:10px}
+#logo{width:34px;height:34px;border-radius:9px;background:linear-gradient(135deg,#4285f4,#a142f4);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:900;font-size:15px}
+#title-name{font-weight:800;font-size:15px}
+#title-sub{font-size:11px;color:#9aa0a6}
+#nav{display:flex;gap:4px}
+.nav-btn{padding:5px 13px;border:none;border-radius:7px;font-size:12px;font-weight:700;background:transparent;color:#5f6368;transition:all .15s}
+.nav-btn.active{background:#e8f0fe;color:#1a56cc}
+#content{max-width:1200px;margin:0 auto;padding:20px}
+#toast{position:fixed;top:18px;right:18px;z-index:9999;padding:10px 18px;border-radius:10px;font-weight:700;font-size:13px;box-shadow:0 4px 18px rgba(0,0,0,.2);display:none}
+.kpi-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:18px}
+.kpi{border-radius:12px;padding:14px 16px}
+.kpi-val{font-size:26px;font-weight:900}
+.kpi-lbl{font-size:11px;font-weight:600;opacity:.85}
+.card{background:#fff;border-radius:14px;padding:18px;border:1px solid #e0e3e8;margin-bottom:16px}
+.card-title{font-weight:800;font-size:14px;margin-bottom:14px}
+.prog-wrap{display:flex;align-items:center;gap:6px;min-width:90px}
+.prog-track{flex:1;height:5px;background:#e8eaed;border-radius:3px;overflow:hidden}
+.prog-fill{height:100%;border-radius:3px}
+.prog-pct{font-size:10px;color:#5f6368;min-width:24px}
+.badge{display:inline-flex;align-items:center;gap:5px;padding:2px 9px;border-radius:20px;font-size:11px;font-weight:700;white-space:nowrap}
+.badge-dot{width:6px;height:6px;border-radius:50%;display:inline-block}
+.alert-badge{border-radius:10px;padding:1px 7px;font-size:10px;font-weight:800}
+.proj-row{display:flex;align-items:center;padding:11px 14px;gap:10px;background:#1a3a5c;cursor:pointer}
+.proj-row:hover{background:#1e4470}
+.proj-num{font-size:11px;background:rgba(255,255,255,.1);color:#ccc;padding:1px 7px;border-radius:6px;font-weight:700}
+.proj-nome{flex:1;font-weight:800;font-size:14px;color:#fff}
+.proj-date{font-size:11px;color:#aaa;white-space:nowrap}
+.add-pill{display:inline-flex;align-items:center;gap:3px;background:rgba(255,255,255,.1);color:#8ab4f8;border:none;border-radius:20px;padding:2px 9px;font-size:10px;font-weight:800;white-space:nowrap}
+.add-pill:hover{background:rgba(255,255,255,.2)}
+.add-pill-light{background:#e8f0fe;color:#1a56cc;border:none;border-radius:20px;padding:2px 9px;font-size:10px;font-weight:800;white-space:nowrap}
+.add-pill-light:hover{background:#d2e3fc}
+.edit-btn{background:rgba(255,255,255,.13);border:none;border-radius:6px;padding:3px 9px;color:#fff;font-size:11px;font-weight:700}
+.edit-btn:hover{background:rgba(255,255,255,.22)}
+.edit-btn-light{background:#f1f3f4;border:none;border-radius:5px;padding:2px 8px;color:#5f6368;font-size:10px;font-weight:700}
+.edit-btn-light:hover{background:#e8eaed}
+.sub-row{display:flex;align-items:center;padding:9px 14px;gap:9px;background:#f8f9fb;border-bottom:1px solid #e8eaed}
+.sub-num{font-size:10px;background:#e8eaed;color:#5f6368;padding:1px 6px;border-radius:5px;font-weight:700}
+.sub-nome{flex:1;font-weight:700;font-size:13px;color:#202124}
+.act-row{display:flex;align-items:center;gap:8px;background:#fff;border-bottom:1px solid #f1f3f4}
+.act-num{font-size:10px;color:#bdc1c6;font-weight:600;min-width:56px}
+.act-nome{flex:1;font-size:12px;color:#3c4043}
+.act-date{font-size:10px;color:#9aa0a6;white-space:nowrap}
+.edit-panel{display:grid;grid-template-columns:1fr 1fr 1fr 1fr auto;gap:10px;align-items:end;padding:12px 14px;border-bottom:1px solid #e0e3e8;background:#f8f9fb}
+.edit-panel-dark{background:#122840}
+.edit-panel label{font-size:10px;font-weight:700;display:block;margin-bottom:3px;color:#5f6368}
+.edit-panel-dark label{color:#aaa}
+.edit-panel input,.edit-panel select,.edit-panel textarea{width:100%;padding:6px 8px;border:1px solid #dadce0;border-radius:6px;font-size:12px}
+.edit-panel-dark input,.edit-panel-dark select,.edit-panel-dark textarea{background:#1e3a55;color:#eee;border-color:#2a5070}
+.edit-full{grid-column:1/-1}
+.save-btn{background:#34a853;color:#fff;border:none;border-radius:6px;padding:7px 13px;font-weight:800;font-size:12px}
+.cancel-btn{background:#e8eaed;border:none;border-radius:6px;padding:7px 10px;font-size:12px}
+.add-form{display:grid;grid-template-columns:100px 1fr 120px 120px 140px;gap:8px;align-items:end;padding:12px 14px;border-bottom:1px solid #c8d6e8;border-left:3px solid #4285f4;background:#f0f7ff}
+.add-form-dark{background:#0f2236;border-left-color:#4285f4}
+.add-form label{font-size:10px;font-weight:700;display:block;margin-bottom:3px;color:#5f6368}
+.add-form-dark label{color:#aaa}
+.add-form input,.add-form select{width:100%;padding:6px 8px;border:1px solid #dadce0;border-radius:6px;font-size:12px}
+.add-form-dark input,.add-form-dark select{background:#1a3a55;color:#eee;border-color:#2a5070}
+.add-form-btns{grid-column:1/-1;display:flex;gap:8px;margin-top:4px}
+.add-confirm{background:#4285f4;color:#fff;border:none;border-radius:6px;padding:6px 16px;font-weight:800;font-size:12px}
+.filter-box{background:#fff;border:1px solid #e0e3e8;border-radius:10px;padding:12px 16px;margin-bottom:12px}
+.filter-box-title{font-size:12px;font-weight:700;color:#5f6368;margin-bottom:8px}
+.filter-checks{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.fcheck{display:flex;align-items:center;gap:6px;cursor:pointer;padding:4px 10px;border-radius:20px;border:1.5px solid #e0e3e8;background:#f8f9fb;transition:all .15s;user-select:none}
+.fcheck input{width:13px;height:13px;cursor:pointer}
+.fcheck span{font-size:12px;font-weight:600;color:#9aa0a6}
+.fcheck.checked span{color:#1c1e21}
+.new-proj-btn{background:#4285f4;color:#fff;border:none;border-radius:7px;padding:7px 16px;font-size:12px;font-weight:800}
+.new-proj-btn:hover{background:#3367d6}
+.proj-wrap{margin-bottom:12px}
+.tree-container{border:1px solid #e0e3e8;border-top:none;border-radius:0 0 12px 12px;overflow:hidden}
+.toggle-btn{background:none;border:none;font-size:13px;padding:0;font-weight:900;min-width:18px}
+.av-chip{display:inline-flex;align-items:center;gap:4px;background:#f1f3f4;border-radius:20px;padding:1px 7px 1px 1px;white-space:nowrap}
+.av-circle{border-radius:50%;color:#fff;display:inline-flex;align-items:center;justify-content:center;font-weight:800}
+.av-name{font-size:10px;font-weight:600;color:#3c4043}
+.resp-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:14px}
+.resp-card{background:#fff;border-radius:14px;border:1px solid #e0e3e8;overflow:hidden}
+.resp-card-head{padding:14px 16px 10px;border-bottom:1px solid #f1f3f4}
+.resp-card-info{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.resp-av{width:40px;height:40px;border-radius:50%;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:16px;flex-shrink:0}
+.resp-name{font-weight:800;font-size:14px}
+.resp-sub{font-size:11px;color:#9aa0a6}
+.resp-pct{font-weight:900;font-size:18px}
+.resp-pills{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap}
+.resp-pill{border-radius:10px;padding:1px 8px;font-size:10px;font-weight:700}
+.resp-list{max-height:260px;overflow-y:auto}
+.resp-item{display:flex;align-items:center;gap:8px;padding:7px 14px;border-bottom:1px solid #f8f9fb}
+.resp-item-num{font-size:10px;color:#bdc1c6;font-weight:600;min-width:44px}
+.resp-item-nome{flex:1;font-size:12px;color:#3c4043;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.resp-item-date{font-size:10px;color:#9aa0a6;white-space:nowrap}
+.alert-card{background:#fff;border-radius:11px;padding:12px 16px;display:flex;align-items:center;justify-content:space-between;margin-bottom:9px}
+.empty{background:#fff;border-radius:12px;padding:32px;text-align:center;color:#9aa0a6}
+.filters-row{display:flex;gap:10px;margin-bottom:4px;flex-wrap:wrap}
+.filters-row .filter-box{flex:1;min-width:200px;margin-bottom:0}
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js" onerror="window._xlsxFailed=true"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+</head>
+<body>
+<div id="header">
+  <div id="header-left">
+    <div id="logo">P</div>
+    <div>
+      <div id="title-name">Paula Ortolani</div>
+      <div id="title-sub">Painel de Projetos · Gente &amp; Cultura</div>
+    </div>
+  </div>
+  <div style="display:flex;align-items:center;gap:10px">
+    <div id="save-indicator" style="display:none;align-items:center;padding:4px 10px;border-radius:8px;font-size:11px;font-weight:700"></div>
+    <button onclick="saveToFirebase()" style="background:#34a853;color:#fff;border:none;border-radius:7px;padding:5px 14px;font-size:12px;font-weight:800;cursor:pointer" title="Salvamento automático ativo — clique para forçar salvamento">☁️ Auto-salvo</button>
+  </div>
+  <div id="nav">
+    <button class="nav-btn active" onclick="setView('dashboard')">📊 Visão Geral</button>
+    <button class="nav-btn" onclick="setView('list')">📋 Projetos</button>
+    <button class="nav-btn" id="nav-alerts" onclick="setView('alerts')">🔔 Alertas</button>
+    <button class="nav-btn" onclick="setView('resp')">👥 Responsáveis</button>
+    <button class="nav-btn" onclick="setView('canceled')">🚫 Cancelados</button>
+    <button class="nav-btn" onclick="setView('cronograma')">📅 Cronograma</button>
+    <button class="nav-btn" onclick="setView('historico')">📋 Histórico</button>
+    <button class="nav-btn" onclick="setView('gerencial')">📊 Gerencial</button>
+  </div>
+</div>
+<div id="toast"></div>
+<div id="content"></div>
+<script>
+const RAW_DATA = [{"num": "17", "nome": "Programa Fluir", "status": "Em andamento", "pct": 0.68, "ini": 46023.375, "fim": 46387.7083, "resp": "Clarissa", "notas": "", "tipo": "governanca"}, {"num": "17.1", "nome": "Pilar Físico | Aulões", "status": "Em andamento", "pct": 0.35, "ini": 46135.375, "fim": 46377.7083, "resp": "Clarissa", "notas": "", "tipo": "governanca"}, {"num": "17.1.1", "nome": "Av Dom Pedro", "status": "Concluída", "pct": 1.0, "ini": 46135.375, "fim": 46135.7083, "resp": "Clarissa", "notas": "", "tipo": "governanca"}, {"num": "17.1.2", "nome": "Parque Celso Daniel", "status": "Concluída", "pct": 1.0, "ini": 46146.375, "fim": 46146.7083, "resp": "Clarissa", "notas": "", "tipo": "governanca"}, {"num": "17.1.3", "nome": "Dia da família", "status": "Cancelada", "pct": 1.0, "ini": 46171.375, "fim": 46171.7083, "resp": "Clarissa", "notas": "", "tipo": "governanca"}, {"num": "17.1.4", "nome": "Marcar a Zumba em SBC", "status": "Cancelada", "pct": 0.0, "ini": 46188.375, "fim": 46188.7083, "resp": "Clarissa", "notas": "", "tipo": "governanca"}, {"num": "17.1.5", "nome": "Circuito das estações", "status": "Em andamento", "pct": 0.9, "ini": 46202.375, "fim": 46202.7083, "resp": "Clarissa", "notas": "", "tipo": "governanca"}, {"num": "17.1.6", "nome": "Parque Celso Daniel", "status": "Não iniciada", "pct": 0.0, "ini": 46223.375, "fim": 46223.7083, "resp": "Clarissa", "notas": "", "tipo": "governanca"}, {"num": "17.1.7", "nome": "Marcar a Zumba em SBC", "status": "Não iniciada", "pct": 0.0, "ini": 46251.375, "fim": 46251.7083, "resp": "Clarissa", "notas": "", "tipo": "governanca"}, {"num": "17.1.8", "nome": "Corrida da Primavera", "status": "Não iniciada", "pct": 0.0, "ini": 46279.375, "fim": 46279.7083, "resp": "Clarissa", "notas": "", "tipo": "governanca"}, {"num": "17.1.9", "nome": "Marcar a Zumba em SBC", "status": "Não iniciada", "pct": 0.0, "ini": 46314.375, "fim": 46314.7083, "resp": "Clarissa", "notas": "", "tipo": "governanca"}, {"num": "17.1.10", "nome": "Parque Celso Daniel", "status": "Não iniciada", "pct": 0.0, "ini": 46335.375, "fim": 46335.7083, "resp": "Clarissa", "notas": "", "tipo": "governanca"}, {"num": "17.1.11", "nome": "Corrida Verão", "status": "Não iniciada", "pct": 0.0, "ini": 46377.375, "fim": 46377.7083, "resp": "Clarissa", "notas": "", "tipo": "governanca"}, {"num": "17.2", "nome": "Pilar Social", "status": "Em andamento", "pct": 0.5, "ini": 46085.375, "fim": 46237.7083, "resp": "Vitória", "notas": "", "tipo": "governanca"}, {"num": "17.2.1", "nome": "Resgate do Grupo de Voluntariado Corporativo", "status": "Concluída", "pct": 1.0, "ini": 46174.375, "fim": 46174.7083, "resp": "Vitória", "notas": "", "tipo": "governanca"}, {"num": "17.2.2", "nome": "Criação do Comitê de Engajamento em todas as diretorias, com papeis e responsabilidades definidas", "status": "Concluída", "pct": 1.0, "ini": 46085.375, "fim": 46085.7083, "resp": "Vitória", "notas": "", "tipo": "governanca"}, {"num": "17.2.3", "nome": "Campanha de Logística Reversa", "status": "Concluída", "pct": 1.0, "ini": 46085.375, "fim": 46085.7083, "resp": "Vitória", "notas": "", "tipo": "governanca"}, {"num": "17.2.4", "nome": "Páscoa Solidária", "status": "Concluída", "pct": 1.0, "ini": 46085.375, "fim": 46085.7083, "resp": "Vitória", "notas": "", "tipo": "governanca"}, {"num": "17.2.5", "nome": "Campanha do Dia Mundial da Água", "status": "Concluída", "pct": 1.0, "ini": 46085.375, "fim": 46085.7083, "resp": "Vitória", "notas": "", "tipo": "governanca"}, {"num": "17.2.6", "nome": "Relatório IFRS S1 S2", "status": "Em andamento", "pct": 0.0, "ini": null, "fim": null, "resp": "Vitória", "notas": "", "tipo": "governanca"}, {"num": "17.2.7", "nome": "Aprendiz", "status": "Em andamento", "pct": 0.0, "ini": null, "fim": null, "resp": "Vitória", "notas": "", "tipo": "governanca"}, {"num": "17.2.8", "nome": "Aceleração do Programa de Pessoas com Deficiência", "status": "Em andamento", "pct": 0.0, "ini": null, "fim": null, "resp": "Vitória", "notas": "", "tipo": "governanca"}, {"num": "17.2.9", "nome": "Dia da Família - Previsto para maio/junho", "status": "Cancelada", "pct": 0.0, "ini": null, "fim": null, "resp": "Vitória", "notas": "", "tipo": "governanca"}, {"num": "17.2.10", "nome": "Campanha de Doação de Sangue - previsto para junho (Dia do Doador de Sangue, 14 de junho)", "status": "Em andamento", "pct": 0.25, "ini": 46182.375, "fim": 46223.7083, "resp": "Vitória", "notas": "", "tipo": "governanca"}, {"num": "17.2.11", "nome": "Campanha do Agasalho", "status": "Em andamento", "pct": 0.02, "ini": 46195.375, "fim": 46237.7083, "resp": "Vitória", "notas": "", "tipo": "governanca"}, {"num": "17.2.12", "nome": "Comitê de PCDs", "status": "Em andamento", "pct": 0.0, "ini": null, "fim": null, "resp": "Vitória", "notas": "", "tipo": "governanca"}, {"num": "17.2.13", "nome": "Pesquisa de Clima GPTW", "status": "Concluída", "pct": 1.0, "ini": 46085.375, "fim": 46140.7083, "resp": "Vitória", "notas": "", "tipo": "governanca"}, {"num": "17.2.14", "nome": "Outubro Rosa", "status": "Não iniciada", "pct": 0.0, "ini": null, "fim": null, "resp": "Vitória", "notas": "", "tipo": "governanca"}, {"num": "17.2.15", "nome": "Semana da Criança", "status": "Não iniciada", "pct": 0.0, "ini": null, "fim": null, "resp": "Vitória", "notas": "", "tipo": "governanca"}, {"num": "17.2.16", "nome": "Natal Solidário", "status": "Não iniciada", "pct": 0.0, "ini": null, "fim": null, "resp": "Vitória", "notas": "", "tipo": "governanca"}, {"num": "17.2.17", "nome": "Dia internacional da pessoa com deficiência", "status": "Não iniciada", "pct": 0.0, "ini": null, "fim": null, "resp": "Vitória", "notas": "", "tipo": "governanca"}, {"num": "17.3", "nome": "Pesquisa Gattaz", "status": "Concluída", "pct": 0.96, "ini": 46023.375, "fim": 46153.7083, "resp": "Vitória", "notas": "", "tipo": "governanca"}, {"num": "17.3.1", "nome": "Abertura do Nimbi", "status": "Concluída", "pct": 1.0, "ini": 46023.375, "fim": 46027.7083, "resp": "Vitória", "notas": "", "tipo": "governanca"}, {"num": "17.3.2", "nome": "Aditivo jurídico", "status": "Concluída", "pct": 1.0, "ini": 46027.375, "fim": 46031.7083, "resp": "Vitória", "notas": "", "tipo": "governanca"}, {"num": "17.3.3", "nome": "Comunicação Geral", "status": "Concluída", "pct": 1.0, "ini": 46028.375, "fim": 46048.7083, "resp": "Vitória", "notas": "", "tipo": "governanca"}, {"num": "17.3.4", "nome": "Adesivo sensorial (mindfulness) para engajamento da pesquisa", "status": "Concluída", "pct": 1.0, "ini": 46027.375, "fim": 46034.7083, "resp": "Vitória", "notas": "", "tipo": "governanca"}, {"num": "17.3.5", "nome": "Solicitar ao time de comunicação o design do adesivo", "status": "Concluída", "pct": 1.0, "ini": 46027.375, "fim": 46034.7083, "resp": "Vitória", "notas": "", "tipo": "governanca"}, {"num": "17.3.6", "nome": "Abertura do Nimbi", "status": "Concluída", "pct": 1.0, "ini": 46085.375, "fim": 46085.7083, "resp": "Vitória", "notas": "", "tipo": "governanca"}, {"num": "17.3.7", "nome": "Subir NF para pagamento", "status": "Concluída", "pct": 1.0, "ini": 46031.375, "fim": 46045.7083, "resp": "Vitória", "notas": "", "tipo": "governanca"}, {"num": "17.3.8", "nome": "Recebimento do relatório da consultoria", "status": "Concluída", "pct": 1.0, "ini": 46042.375, "fim": 46062.7083, "resp": "Vitória", "notas": "", "tipo": "governanca"}, {"num": "17.3.9", "nome": "Plano de ação após desdobramento da pesquisa saúde mental", "status": "Atrasada", "pct": 0.92, "ini": 46083.375, "fim": 46153.7083, "resp": "Vitória", "notas": "", "tipo": "governanca"}, {"num": "17.3.9.1", "nome": "Agenda com lideranças para desdobramento das diretorias", "status": "Em andamento", "pct": 0.92, "ini": 46083.375, "fim": 46153.7083, "resp": "Vitória", "notas": "", "tipo": "governanca"}, {"num": "17.3.9.2", "nome": "2º Grupo de treinamento para a liderança", "status": "Em andamento", "pct": 0.8, "ini": 46083.375, "fim": 46083.7083, "resp": "Vitória", "notas": "", "tipo": "governanca"}, {"num": "17.4", "nome": "Fluir FIT 1ª edição", "status": "Em andamento", "pct": 0.99, "ini": 46069.375, "fim": 46387.7083, "resp": "Vitória", "notas": "", "tipo": "governanca"}, {"num": "17.4.1", "nome": "Comunicação Geral - Lançamento do Programa", "status": "Concluída", "pct": 1.0, "ini": 46069.375, "fim": 46080.7083, "resp": "Vitória", "notas": "", "tipo": "governanca"}, {"num": "17.4.2", "nome": "Avaliação da médica da família para elegibilidade no programa", "status": "Concluída", "pct": 1.0, "ini": 46069.375, "fim": 46080.7083, "resp": "Vitória", "notas": "", "tipo": "governanca"}, {"num": "17.4.3", "nome": "Avaliar estado nutricional do paciente", "status": "Concluída", "pct": 1.0, "ini": 46083.375, "fim": 46199.7083, "resp": "Vitória", "notas": "", "tipo": "governanca"}, {"num": "17.4.4", "nome": "Envios semanais de pilulas via teams, incentivando os colaboradores a se planejar com antecedência", "status": "Concluída", "pct": 1.0, "ini": 46083.375, "fim": 46199.7083, "resp": "Vitória", "notas": "", "tipo": "governanca"}, {"num": "17.4.5", "nome": "Extração de relatório da plataforma Total Pass", "status": "Concluída", "pct": 1.0, "ini": 46083.375, "fim": 46199.7083, "resp": "Vitória", "notas": "", "tipo": "governanca"}, {"num": "17.4.6", "nome": "Lançamento do reembolso do Total Pass em Folha", "status": "Concluída", "pct": 1.0, "ini": 46083.375, "fim": 46199.7083, "resp": "Vitória", "notas": "", "tipo": "governanca"}, {"num": "17.4.7", "nome": "Finalização Fluir Fit + comunicação ganhadores", "status": "Em andamento", "pct": 0.75, "ini": 46203.375, "fim": 46203.7083, "resp": "Vitória", "notas": "", "tipo": "governanca"}, {"num": "17.4.8", "nome": "Abertura da agenda de Bioimpedância", "status": "Concluída", "pct": 1.0, "ini": 46076.375, "fim": 46387.7083, "resp": "Vitória", "notas": "", "tipo": "governanca"}, {"num": "17.4.8.1", "nome": "Envio do termo de consentimento para realização do exame", "status": "Concluída", "pct": 1.0, "ini": 46076.375, "fim": 46387.7083, "resp": "Vitória", "notas": "", "tipo": "governanca"}, {"num": "17.5", "nome": "Ações mensais do calendário de ações", "status": "Em andamento", "pct": 0.45, "ini": 46043.375, "fim": 46386.7083, "resp": "Vitória", "notas": "", "tipo": "governanca"}, {"num": "17.5.1", "nome": "Saúde Mental", "status": "Concluída", "pct": 1.0, "ini": 46043.375, "fim": 46044.7083, "resp": "Vitória", "notas": "", "tipo": "governanca"}, {"num": "17.5.2", "nome": "Leucemia e doação de medula ossea", "status": "Concluída", "pct": 1.0, "ini": 46055.375, "fim": 46080.7083, "resp": "Vitória", "notas": "", "tipo": "governanca"}, {"num": "17.5.3", "nome": "Nutrição e Comer Bem", "status": "Concluída", "pct": 1.0, "ini": 46083.375, "fim": 46111.7083, "resp": "Vitória", "notas": "", "tipo": "governanca"}, {"num": "17.5.4", "nome": "Autismo e vacina da gripe", "status": "Concluída", "pct": 1.0, "ini": 46112.375, "fim": 46141.7083, "resp": "Vitória", "notas": "", "tipo": "governanca"}, {"num": "17.5.5", "nome": "Saúde Visual", "status": "Cancelada", "pct": 1.0, "ini": 46142.375, "fim": 46171.7083, "resp": "Vitória", "notas": "", "tipo": "governanca"}, {"num": "17.5.6", "nome": "Doação de Sangue", "status": "Cancelada", "pct": 1.0, "ini": 46174.375, "fim": 46202.7083, "resp": "Vitória", "notas": "", "tipo": "governanca"}, {"num": "17.5.7", "nome": "Doenças cardiovasculares", "status": "Não iniciada", "pct": 0.0, "ini": 46203.375, "fim": 46233.7083, "resp": "Vitória", "notas": "", "tipo": "governanca"}, {"num": "17.5.8", "nome": "Aleitamento Materno e Saúde na Gestação", "status": "Não iniciada", "pct": 0.0, "ini": 46234.375, "fim": 46262.7083, "resp": "Vitória", "notas": "", "tipo": "governanca"}, {"num": "17.5.9", "nome": "Saúde Mental, Suicídio e PCD", "status": "Não iniciada", "pct": 0.0, "ini": 46265.375, "fim": 46294.7083, "resp": "Vitória", "notas": "", "tipo": "governanca"}, {"num": "17.5.10", "nome": "Câncer de Mama", "status": "Não iniciada", "pct": 0.0, "ini": 46295.375, "fim": 46325.7083, "resp": "Vitória", "notas": "", "tipo": "governanca"}, {"num": "17.5.11", "nome": "Saúde Masculina e Diabetes", "status": "Não iniciada", "pct": 0.0, "ini": 46328.375, "fim": 46353.7083, "resp": "Vitória", "notas": "", "tipo": "governanca"}, {"num": "17.5.12", "nome": "Prevenção Câncer de Pele", "status": "Não iniciada", "pct": 0.0, "ini": 46356.375, "fim": 46386.7083, "resp": "Vitória", "notas": "", "tipo": "governanca"}, {"num": "17.6", "nome": "1ª Corrida/Meia Maratona", "status": "Concluída", "pct": 1.0, "ini": 46062.375, "fim": 46098.7083, "resp": "Clarissa", "notas": "", "tipo": "governanca"}, {"num": "17.6.1", "nome": "Comunicação Geral", "status": "Concluída", "pct": 1.0, "ini": 46062.375, "fim": 46098.7083, "resp": "Clarissa", "notas": "", "tipo": "governanca"}, {"num": "17.6.2", "nome": "Solicitar ao organizador a NF para a compra das inscrições", "status": "Concluída", "pct": 1.0, "ini": 46062.375, "fim": 46078.7083, "resp": "Clarissa", "notas": "", "tipo": "governanca"}, {"num": "17.6.3", "nome": "Lançamento do desconto em verba da folha", "status": "Concluída", "pct": 1.0, "ini": 46097.375, "fim": 46098.7083, "resp": "Clarissa", "notas": "", "tipo": "governanca"}, {"num": "17.6.4", "nome": "Inscrever os colaboradores no app da corrida", "status": "Concluída", "pct": 1.0, "ini": 46062.375, "fim": 46078.7083, "resp": "Clarissa", "notas": "", "tipo": "governanca"}, {"num": "17.6.5", "nome": "Retirar os kits da corrida e entregar aos colaboradores", "status": "Concluída", "pct": 1.0, "ini": 46092.375, "fim": 46094.7083, "resp": "Clarissa", "notas": "", "tipo": "governanca"}, {"num": "17.7", "nome": "2ª Corrida/Meia Maratona", "status": "Não iniciada", "pct": 0.0, "ini": 46167.375, "fim": 46255.7083, "resp": "Clarissa", "notas": "", "tipo": "governanca"}, {"num": "17.7.1", "nome": "Comunicação Geral", "status": "Não iniciada", "pct": 0.0, "ini": 46170.375, "fim": 46202.7083, "resp": "Clarissa", "notas": "", "tipo": "governanca"}, {"num": "17.7.2", "nome": "Solicitar ao organizador a NF para a compra das inscrições", "status": "Não iniciada", "pct": 0.0, "ini": 46170.375, "fim": 46170.7083, "resp": "Clarissa", "notas": "", "tipo": "governanca"}, {"num": "17.7.3", "nome": "Lançamento do desconto em verba da folha", "status": "Não iniciada", "pct": 0.0, "ini": 46170.375, "fim": 46191.7083, "resp": "Clarissa", "notas": "", "tipo": "governanca"}, {"num": "17.7.4", "nome": "Inscrever os colaboradores no app da corrida", "status": "Não iniciada", "pct": 0.0, "ini": 46170.375, "fim": 46170.7083, "resp": "Clarissa", "notas": "", "tipo": "governanca"}, {"num": "17.7.5", "nome": "Retirar os kits da corrida e entregar aos colaboradores", "status": "Em andamento", "pct": 0.0, "ini": 46167.375, "fim": 46255.7083, "resp": "Clarissa", "notas": "", "tipo": "governanca"}, {"num": "17.8", "nome": "3ª Corrida/Meia Maratona", "status": "Não iniciada", "pct": 0.0, "ini": 46204.375, "fim": 46295.7083, "resp": "Clarissa", "notas": "", "tipo": "governanca"}, {"num": "17.8.1", "nome": "Comunicação Geral", "status": "Não iniciada", "pct": 0.0, "ini": 46204.375, "fim": 46204.7083, "resp": "Clarissa", "notas": "", "tipo": "governanca"}, {"num": "17.8.2", "nome": "Solicitar ao organizador a NF para a compra das inscrições", "status": "Não iniciada", "pct": 0.0, "ini": 46204.375, "fim": 46204.7083, "resp": "Clarissa", "notas": "", "tipo": "governanca"}, {"num": "17.8.3", "nome": "Lançamento do desconto em verba da folha", "status": "Não iniciada", "pct": 0.0, "ini": 46204.375, "fim": 46204.7083, "resp": "Clarissa", "notas": "", "tipo": "governanca"}, {"num": "17.8.4", "nome": "Inscrever os colaboradores no app da corrida", "status": "Não iniciada", "pct": 0.0, "ini": 46204.375, "fim": 46204.7083, "resp": "Clarissa", "notas": "", "tipo": "governanca"}, {"num": "17.8.5", "nome": "Retirar os kits da corrida e entregar aos colaboradores", "status": "Não iniciada", "pct": 0.0, "ini": 46204.375, "fim": 46295.7083, "resp": "Clarissa", "notas": "", "tipo": "governanca"}, {"num": "17.9", "nome": "4ª Corrida/Meia Maratona", "status": "Não iniciada", "pct": 0.0, "ini": 46296.375, "fim": 46387.7083, "resp": "Clarissa", "notas": "", "tipo": "governanca"}, {"num": "17.9.1", "nome": "Comunicação Geral", "status": "Não iniciada", "pct": 0.0, "ini": 46296.375, "fim": 46296.7083, "resp": "Clarissa", "notas": "", "tipo": "governanca"}, {"num": "17.9.2", "nome": "Solicitar ao organizador a NF para a compra das inscrições", "status": "Não iniciada", "pct": 0.0, "ini": 46296.375, "fim": 46296.7083, "resp": "Clarissa", "notas": "", "tipo": "governanca"}, {"num": "17.9.3", "nome": "Lançamento do desconto em verba da folha", "status": "Não iniciada", "pct": 0.0, "ini": 46296.375, "fim": 46296.7083, "resp": "Clarissa", "notas": "", "tipo": "governanca"}, {"num": "17.9.4", "nome": "Inscrever os colaboradores no app da corrida", "status": "Não iniciada", "pct": 0.0, "ini": 46296.375, "fim": 46296.7083, "resp": "Clarissa", "notas": "", "tipo": "governanca"}, {"num": "17.9.5", "nome": "Retirar os kits da corrida e entregar aos colaboradores", "status": "Não iniciada", "pct": 0.0, "ini": 46296.375, "fim": 46387.7083, "resp": "Clarissa", "notas": "", "tipo": "governanca"}, {"num": "17.10", "nome": "Aulão de esportes", "status": "Concluída", "pct": 1.0, "ini": 46085.375, "fim": 46112.7083, "resp": "Clarissa", "notas": "", "tipo": "governanca"}, {"num": "17.10.1", "nome": "Definir qual será o tipo de atividade, ou se é possível ter mais de uma, alinhamento com a nossa assessoria", "status": "Concluída", "pct": 1.0, "ini": 46085.375, "fim": 46085.7083, "resp": "Clarissa", "notas": "", "tipo": "governanca"}, {"num": "17.10.2", "nome": "Comunicação Geral", "status": "Concluída", "pct": 1.0, "ini": 46097.375, "fim": 46101.7083, "resp": "Clarissa", "notas": "", "tipo": "governanca"}, {"num": "17.10.3", "nome": "Enviar pesquisa NPS para identificar se foi assertivo o evento", "status": "Concluída", "pct": 1.0, "ini": 46111.375, "fim": 46112.7083, "resp": "Clarissa", "notas": "", "tipo": "governanca"}, {"num": "17.11", "nome": "Fluir Cast", "status": "Cancelada", "pct": 1.0, "ini": 46174.375, "fim": 46174.7083, "resp": "", "notas": "", "tipo": "governanca"}, {"num": "17.11.1", "nome": "Alinhamento com o time de comunicação para gravação com convidados especiais", "status": "Cancelada", "pct": 1.0, "ini": 46174.375, "fim": 46174.7083, "resp": "", "notas": "", "tipo": "governanca"}, {"num": "17.11.2", "nome": "Episódio 1: “Fluir por inteiro: o que é saúde integral na vida real?”", "status": "Cancelada", "pct": 1.0, "ini": 46174.375, "fim": 46174.7083, "resp": "", "notas": "", "tipo": "governanca"}, {"num": "17.11.3", "nome": "Episódio 2: “Equilíbrio sem culpar: autocobrança, rotina e saúde mental”", "status": "Cancelada", "pct": 1.0, "ini": 46174.375, "fim": 46174.7083, "resp": "", "notas": "", "tipo": "governanca"}, {"num": "17.11.4", "nome": "Episódio 3: “Conexões que cuidam: relações, apoio e pertencimento”", "status": "Cancelada", "pct": 1.0, "ini": 46174.375, "fim": 46174.7083, "resp": "", "notas": "", "tipo": "governanca"}, {"num": "17.11.5", "nome": "Episódio 4: “Comer bem sem neura: alimentação possível no dia a dia”", "status": "Cancelada", "pct": 1.0, "ini": 46174.375, "fim": 46174.7083, "resp": "", "notas": "", "tipo": "governanca"}, {"num": "17.11.6", "nome": "Episódio 5: “Cuidar do outro também é saúde: empatia, solidariedade e impacto”", "status": "Cancelada", "pct": 1.0, "ini": 46174.375, "fim": 46174.7083, "resp": "", "notas": "", "tipo": "governanca"}, {"num": "18", "nome": "2ª Edição Copa Fluir", "status": "Em andamento", "pct": 1.0, "ini": 46066.375, "fim": 46160.7083, "resp": "Clarissa", "notas": "", "tipo": "governanca"}, {"num": "18.1", "nome": "Definição do local", "status": "Concluída", "pct": 1.0, "ini": 46066.375, "fim": 46066.7083, "resp": "Paula", "notas": "", "tipo": "governanca"}, {"num": "18.2", "nome": "Abertura RC no Nimbi", "status": "Concluída", "pct": 1.0, "ini": 46066.375, "fim": 46112.7083, "resp": "Vitória", "notas": "", "tipo": "governanca"}, {"num": "18.3", "nome": "Buscar patrocinadores", "status": "Concluída", "pct": 1.0, "ini": 46094.375, "fim": 46118.7083, "resp": "Paula", "notas": "", "tipo": "governanca"}, {"num": "18.4", "nome": "Comunicação Geral", "status": "Concluída", "pct": 1.0, "ini": 46118.375, "fim": 46122.7083, "resp": "Paula", "notas": "", "tipo": "governanca"}, {"num": "18.5", "nome": "Sorteio das duplas / Grupos", "status": "Concluída", "pct": 1.0, "ini": 46066.375, "fim": 46125.7083, "resp": "Vitória", "notas": "", "tipo": "governanca"}, {"num": "18.6", "nome": "Criação de chaves com as fotos de cada colaborador / Divulgação na intranet", "status": "Concluída", "pct": 1.0, "ini": 46066.375, "fim": 46125.7083, "resp": "Vitória", "notas": "", "tipo": "governanca"}, {"num": "18.7", "nome": "Envio de termo de autodeclaração para a prática de atividade física", "status": "Concluída", "pct": 1.0, "ini": 46066.375, "fim": 46142.7083, "resp": "Clarissa", "notas": "", "tipo": "governanca"}, {"num": "18.8", "nome": "Envio de convites individual para participantes", "status": "Concluída", "pct": 1.0, "ini": 46066.375, "fim": 46160.7083, "resp": "Vitória", "notas": "", "tipo": "governanca"}, {"num": "19", "nome": "Programa Tabagismo", "status": "Não iniciada", "pct": 0.0, "ini": 46204.375, "fim": 46324.7083, "resp": "", "notas": "", "tipo": "governanca"}, {"num": "19.1", "nome": "Comunicação Geral", "status": "Não iniciada", "pct": 0.0, "ini": 46217.375, "fim": 46233.7083, "resp": "Vitória", "notas": "", "tipo": "governanca"}, {"num": "19.2", "nome": "Envio de Pilulas semanais", "status": "Não iniciada", "pct": 0.0, "ini": 46237.375, "fim": 46324.7083, "resp": "Vitória", "notas": "", "tipo": "governanca"}, {"num": "19.3", "nome": "Fase 1 do programa", "status": "Não iniciada", "pct": 0.0, "ini": 46234.375, "fim": 46262.7083, "resp": "Vitória", "notas": "", "tipo": "governanca"}, {"num": "19.4", "nome": "Encontros Semanais / Rodas de conversa", "status": "Não iniciada", "pct": 0.0, "ini": 46265.375, "fim": 46294.7083, "resp": "Vitória", "notas": "", "tipo": "governanca"}, {"num": "19.5", "nome": "Fase 3 do programa", "status": "Não iniciada", "pct": 0.0, "ini": 46204.375, "fim": 46204.7083, "resp": "Vitória", "notas": "", "tipo": "governanca"}, {"num": "19.6", "nome": "Colaborador precisa enviar no forms/Jira para o envio", "status": "Não iniciada", "pct": 0.0, "ini": 46204.375, "fim": 46204.7083, "resp": "Vitória", "notas": "", "tipo": "governanca"}, {"num": "19.7", "nome": "Lançamento do reembolso do medicamento via folha", "status": "Não iniciada", "pct": 0.0, "ini": 46204.375, "fim": 46204.7083, "resp": "Vitória", "notas": "", "tipo": "governanca"}, {"num": "20", "nome": "Fluir FIT 2ª edição", "status": "Não iniciada", "pct": 0.0, "ini": 46237.375, "fim": 46353.7083, "resp": "", "notas": "", "tipo": "governanca"}, {"num": "20.1", "nome": "Comunicação Geral - Lançamento do Programa", "status": "Não iniciada", "pct": 0.0, "ini": 46237.375, "fim": 46248.7083, "resp": "Vitória", "notas": "", "tipo": "governanca"}, {"num": "20.2", "nome": "Avaliação da médica da família para elegibilidade no programa", "status": "Não iniciada", "pct": 0.0, "ini": 46237.375, "fim": 46248.7083, "resp": "Vitória", "notas": "", "tipo": "governanca"}, {"num": "20.3", "nome": "A bioimpedância é um método de avaliação da composição corporal que utiliza uma corrente elétrica de baixa intensidade e alta frequência para estimar a quantidade de diferentes componentes no organismo", "status": "Não iniciada", "pct": 0.0, "ini": 46237.375, "fim": 46353.7083, "resp": "Vitória", "notas": "", "tipo": "governanca"}, {"num": "20.4", "nome": "Envios semanais de pilulas via teams, incentivando os colaboradores a se planejar com antecedência", "status": "Não iniciada", "pct": 0.0, "ini": 46237.375, "fim": 46353.7083, "resp": "Vitória", "notas": "", "tipo": "governanca"}, {"num": "20.5", "nome": "Extração de relatório da plataforma Total Pass", "status": "Não iniciada", "pct": 0.0, "ini": 46237.375, "fim": 46353.7083, "resp": "Vitória", "notas": "", "tipo": "governanca"}, {"num": "20.6", "nome": "Lançamento do reembolso do Total Pass em Folha", "status": "Não iniciada", "pct": 0.0, "ini": 46237.375, "fim": 46353.7083, "resp": "Vitória", "notas": "", "tipo": "governanca"}, {"num": "21", "nome": "1ª Edição Copa Fluir Jogos on line", "status": "Não iniciada", "pct": 0.0, "ini": 46204.375, "fim": 46234.7083, "resp": "", "notas": "", "tipo": "governanca"}, {"num": "21.1", "nome": "Definiçaõ do local", "status": "Não iniciada", "pct": 0.0, "ini": 46204.375, "fim": 46204.7083, "resp": "Vitória", "notas": "", "tipo": "governanca"}, {"num": "21.2", "nome": "Abertura RC no Nimbi", "status": "Não iniciada", "pct": 0.0, "ini": null, "fim": null, "resp": "Vitória", "notas": "", "tipo": "governanca"}, {"num": "21.3", "nome": "Comunicação geral", "status": "Não iniciada", "pct": 0.0, "ini": null, "fim": null, "resp": "Vitória", "notas": "", "tipo": "governanca"}, {"num": "21.4", "nome": "Buscar patrocinadores", "status": "Não iniciada", "pct": 0.0, "ini": null, "fim": null, "resp": "Vitória", "notas": "", "tipo": "governanca"}, {"num": "21.5", "nome": "Sorteio das duplas/grupos", "status": "Não iniciada", "pct": 0.0, "ini": null, "fim": null, "resp": "Vitória", "notas": "", "tipo": "governanca"}, {"num": "21.6", "nome": "Criação de chaves com as fotos de cada colaborador / Divulgação na intranet", "status": "Não iniciada", "pct": 0.0, "ini": null, "fim": null, "resp": "Vitória", "notas": "", "tipo": "governanca"}, {"num": "21.7", "nome": "Envio de termo de autodeclaração", "status": "Não iniciada", "pct": 0.0, "ini": 46204.375, "fim": 46234.7083, "resp": "Vitória", "notas": "", "tipo": "governanca"}, {"num": "22", "nome": "Minha Viagem", "status": "Em andamento", "pct": 0.36, "ini": 46055.375, "fim": 46386.7083, "resp": "", "notas": "", "tipo": "governanca"}, {"num": "22.1", "nome": "Estrutura de HC exclusiva Minha Viagem", "status": "Concluída", "pct": 1.0, "ini": 46085.375, "fim": 46112.7083, "resp": "", "notas": "", "tipo": "governanca"}, {"num": "22.2", "nome": "Inauguração loja Minha Viagem", "status": "Concluída", "pct": 1.0, "ini": 46104.375, "fim": 46104.7083, "resp": "", "notas": "", "tipo": "governanca"}, {"num": "22.3", "nome": "Loja de Brindes Minha Viagem", "status": "Standby", "pct": 0.3, "ini": 46055.375, "fim": 46111.7083, "resp": "Vitória", "notas": "", "tipo": "governanca"}, {"num": "22.4", "nome": "Revisão dos produtos exclusivos para colaboradores", "status": "Em andamento", "pct": 0.33, "ini": 46085.375, "fim": 46268.7083, "resp": "Vitória", "notas": "", "tipo": "governanca"}, {"num": "22.5", "nome": "Melhoria do NPS Minha Viagem", "status": "Em andamento", "pct": 0.1, "ini": 46356.375, "fim": 46386.7083, "resp": "Vitória", "notas": "", "tipo": "governanca"}, {"num": "23", "nome": "Auxilio Funeral para Pais e Sogros", "status": "Concluída", "pct": 1.0, "ini": 46023.375, "fim": 46142.7083, "resp": "", "notas": "", "tipo": "governanca"}, {"num": "23.1", "nome": "Abertura de NIMBI ao time de compras", "status": "Concluída", "pct": 1.0, "ini": 46023.375, "fim": 46051.7083, "resp": "Vitória", "notas": "", "tipo": "governanca"}, {"num": "23.2", "nome": "Negociação Acrisure/Metlife", "status": "Concluída", "pct": 1.0, "ini": 46051.375, "fim": 46051.7083, "resp": "Vitória", "notas": "", "tipo": "governanca"}, {"num": "23.3", "nome": "Criação de verba e ajuste cadastro de colaborador Propay/LG", "status": "Concluída", "pct": 1.0, "ini": 46051.375, "fim": 46051.7083, "resp": "Vitória", "notas": "", "tipo": "governanca"}, {"num": "23.4", "nome": "Entendimento do envio das informações a Metlife", "status": "Concluída", "pct": 1.0, "ini": 46051.375, "fim": 46051.7083, "resp": "Vitória", "notas": "", "tipo": "governanca"}, {"num": "23.5", "nome": "Criação de termo de adesão", "status": "Concluída", "pct": 1.0, "ini": 46051.375, "fim": 46051.7083, "resp": "Vitória", "notas": "", "tipo": "governanca"}, {"num": "23.6", "nome": "Criação de regras do benefício", "status": "Concluída", "pct": 1.0, "ini": 46051.375, "fim": 46051.7083, "resp": "Vitória", "notas": "", "tipo": "governanca"}, {"num": "23.7", "nome": "Validação com jurídico", "status": "Concluída", "pct": 1.0, "ini": 46051.375, "fim": 46051.7083, "resp": "Vitória", "notas": "", "tipo": "governanca"}, {"num": "23.8", "nome": "Alinhamento time de comunicação", "status": "Concluída", "pct": 1.0, "ini": 46051.375, "fim": 46051.7083, "resp": "Vitória", "notas": "", "tipo": "governanca"}, {"num": "23.9", "nome": "Criação de forms de intenção", "status": "Concluída", "pct": 1.0, "ini": 46051.375, "fim": 46051.7083, "resp": "Vitória", "notas": "", "tipo": "governanca"}, {"num": "23.10", "nome": "Envio de comunicado oficial aos colaboradores", "status": "Concluída", "pct": 1.0, "ini": 46051.375, "fim": 46051.7083, "resp": "", "notas": "", "tipo": "governanca"}, {"num": "23.11", "nome": "Abertura e liberação de intenção por 90 dias;", "status": "Concluída", "pct": 1.0, "ini": 46051.375, "fim": 46051.7083, "resp": "", "notas": "", "tipo": "governanca"}, {"num": "23.12", "nome": "Criação de FAQ para intranet", "status": "Concluída", "pct": 1.0, "ini": 46051.375, "fim": 46051.7083, "resp": "", "notas": "", "tipo": "governanca"}, {"num": "23.13", "nome": "Envio dos termos para assinatura", "status": "Concluída", "pct": 1.0, "ini": 46051.375, "fim": 46051.7083, "resp": "", "notas": "", "tipo": "governanca"}, {"num": "23.14", "nome": "Plantão de dúvidas", "status": "Concluída", "pct": 1.0, "ini": 46051.375, "fim": 46142.7083, "resp": "", "notas": "", "tipo": "governanca"}, {"num": "23.15", "nome": "Importação de cadastro do benefício dos colaboradores em sistema LG", "status": "Concluída", "pct": 1.0, "ini": 46090.375, "fim": 46142.7083, "resp": "", "notas": "", "tipo": "governanca"}, {"num": "23.16", "nome": "Envio das adesões do benefício para a Metlife", "status": "Concluída", "pct": 1.0, "ini": 46055.375, "fim": 46142.7083, "resp": "", "notas": "", "tipo": "governanca"}, {"num": "23.17", "nome": "Atualização dos materiais da integração e admissão", "status": "Concluída", "pct": 1.0, "ini": 46062.375, "fim": 46062.7083, "resp": "", "notas": "", "tipo": "governanca"}, {"num": "23.18", "nome": "Envio do novo benefício para atualização - time de seleção", "status": "Concluída", "pct": 1.0, "ini": 46087.375, "fim": 46094.7083, "resp": "", "notas": "", "tipo": "governanca"}, {"num": "23.19", "nome": "Abono no ponto - Sogros", "status": "Standby", "pct": 1.0, "ini": 46085.375, "fim": 46085.7083, "resp": "", "notas": "", "tipo": "governanca"}, {"num": "24", "nome": "Gestão de Afastados - Boletos", "status": "Standby", "pct": 0.85, "ini": 46085.375, "fim": 46387.7083, "resp": "", "notas": "", "tipo": "governanca"}, {"num": "24.1", "nome": "Alinhamento com o time jurídico para validação do envio de boletos;", "status": "Concluída", "pct": 1.0, "ini": 46085.375, "fim": 46085.7083, "resp": "Vitória", "notas": "", "tipo": "governanca"}, {"num": "24.2", "nome": "Envio dos telegramas para os afastados;", "status": "Concluída", "pct": 1.0, "ini": 46085.375, "fim": 46085.7083, "resp": "Vitória", "notas": "", "tipo": "governanca"}, {"num": "24.3", "nome": "Ajuste no processo dos afastados, com envio de termo com as informações de cobrança de boleto copart e odonto;", "status": "Concluída", "pct": 1.0, "ini": 46085.375, "fim": 46085.7083, "resp": "Vitória", "notas": "", "tipo": "governanca"}, {"num": "24.4", "nome": "Criação de conta contábil - time contabilidade;", "status": "Concluída", "pct": 1.0, "ini": 46085.375, "fim": 46085.7083, "resp": "Vitória", "notas": "", "tipo": "governanca"}, {"num": "24.5", "nome": "Mensalmente validação de tirar a cobrança de odonto da folha de pagamento - não gerar insuficiência de saldo;", "status": "Concluída", "pct": 1.0, "ini": 46085.375, "fim": 46085.7083, "resp": "Vitória", "notas": "", "tipo": "governanca"}, {"num": "24.6", "nome": "Análise dos valores para criação de boletos (copart e odonto);", "status": "Concluída", "pct": 1.0, "ini": 46085.375, "fim": 46085.7083, "resp": "Vitória", "notas": "", "tipo": "governanca"}, {"num": "24.7", "nome": "Abertura de orbium para criação de boleto individual por colaborador afastado (copart e odonto)", "status": "Concluída", "pct": 1.0, "ini": 46085.375, "fim": 46085.7083, "resp": "Vitória", "notas": "", "tipo": "governanca"}, {"num": "24.8", "nome": "Envio de boletos via e-mail individual aos colaboradores afastados (copart e odonto);", "status": "Concluída", "pct": 1.0, "ini": 46085.375, "fim": 46085.7083, "resp": "Vitória", "notas": "", "tipo": "governanca"}, {"num": "24.9", "nome": "Acompanhamento quinzenal dos pagamentos;", "status": "Concluída", "pct": 1.0, "ini": 46085.375, "fim": 46085.7083, "resp": "Vitória", "notas": "", "tipo": "governanca"}, {"num": "24.10", "nome": "Criação de verba e regra de valores folha de pagamento - Propay/LG", "status": "Concluída", "pct": 1.0, "ini": 46085.375, "fim": 46085.7083, "resp": "", "notas": "", "tipo": "governanca"}, {"num": "24.11", "nome": "Criação de regra automatizada", "status": "Standby", "pct": 0.01, "ini": 46085.375, "fim": 46101.7083, "resp": "", "notas": "", "tipo": "governanca"}, {"num": "24.12", "nome": "Envio carta de cobrança", "status": "Concluída", "pct": 1.0, "ini": 46085.375, "fim": 46171.7083, "resp": "", "notas": "", "tipo": "governanca"}, {"num": "24.13", "nome": "Envio para a folha de pagamento dos valores que foram pagos pelos colaboradores afastados.", "status": "Concluída", "pct": 1.0, "ini": 46387.375, "fim": 46387.7083, "resp": "", "notas": "", "tipo": "governanca"}, {"num": "25", "nome": "Escritório análise afastamentos", "status": "Standby", "pct": 0.1, "ini": 46083.375, "fim": 46447.7083, "resp": "", "notas": "", "tipo": "governanca"}, {"num": "25.1", "nome": "Avaliação dos casos", "status": "Em andamento", "pct": 0.1, "ini": 46083.375, "fim": 46447.7083, "resp": "Paula", "notas": "", "tipo": "governanca"}, {"num": "25.2", "nome": "Elaboração de diagnóstico", "status": "Não iniciada", "pct": 0.0, "ini": null, "fim": null, "resp": "Paula", "notas": "", "tipo": "governanca"}, {"num": "26", "nome": "#atualizaai", "status": "Atrasada", "pct": 0.99, "ini": 45792.375, "fim": 46080.7083, "resp": "", "notas": "", "tipo": "governanca"}, {"num": "26.1", "nome": "Desenho escopo projeto", "status": "Concluída", "pct": 1.0, "ini": 45817.375, "fim": 45832.7083, "resp": "Letícia", "notas": "", "tipo": "governanca"}, {"num": "26.2", "nome": "Levantamento necessidade time TI", "status": "Concluída", "pct": 1.0, "ini": 45792.375, "fim": 45825.7083, "resp": "Letícia", "notas": "", "tipo": "governanca"}, {"num": "26.3", "nome": "Alinhamento jurídico e privacidade de dados", "status": "Concluída", "pct": 1.0, "ini": 45911.375, "fim": 45912.7083, "resp": "Letícia", "notas": "", "tipo": "governanca"}, {"num": "26.4", "nome": "Elaboração termo de Recebimento e responsabilidade itens de ergonomia", "status": "Concluída", "pct": 1.0, "ini": 45911.375, "fim": 45912.7083, "resp": "Letícia", "notas": "", "tipo": "governanca"}, {"num": "26.5", "nome": "Inclusão do termo de ergonomia no kit admissional (admissões a partir de 01/10/2025)", "status": "Concluída", "pct": 1.0, "ini": 45915.375, "fim": 45915.7083, "resp": "Letícia", "notas": "", "tipo": "governanca"}, {"num": "26.6", "nome": "Elaboração Forms", "status": "Concluída", "pct": 1.0, "ini": 45817.375, "fim": 45817.7083, "resp": "Letícia", "notas": "", "tipo": "governanca"}, {"num": "26.7", "nome": "Elaboração do comunicado", "status": "Concluída", "pct": 1.0, "ini": 45918.375, "fim": 45924.7083, "resp": "Letícia", "notas": "", "tipo": "governanca"}, {"num": "26.8", "nome": "Apresentação projeto Gerência People Operations", "status": "Concluída", "pct": 1.0, "ini": 45910.375, "fim": 45911.7083, "resp": "Letícia", "notas": "", "tipo": "governanca"}, {"num": "26.9", "nome": "Retomada serviço de formalização e-box", "status": "Concluída", "pct": 1.0, "ini": 45930.375, "fim": 46013.7083, "resp": "Letícia", "notas": "", "tipo": "governanca"}, {"num": "26.10", "nome": "FGTS transferidos", "status": "Concluída", "pct": 1.0, "ini": 45931.375, "fim": 45960.7083, "resp": "Letícia", "notas": "", "tipo": "governanca"}, {"num": "26.11", "nome": "Comunicação liderança", "status": "Concluída", "pct": 1.0, "ini": 45901.375, "fim": 45926.7083, "resp": "Letícia", "notas": "", "tipo": "governanca"}, {"num": "26.12", "nome": "Comunicado colaboradores + liberação da pesquisa", "status": "Concluída", "pct": 1.0, "ini": 45926.375, "fim": 45926.7083, "resp": "Letícia", "notas": "", "tipo": "governanca"}, {"num": "26.13", "nome": "Apuração dos resultados", "status": "Concluída", "pct": 1.0, "ini": 45947.375, "fim": 45950.7083, "resp": "Letícia", "notas": "", "tipo": "governanca"}, {"num": "26.14", "nome": "Atualização Unico Sign (contatos e e-mails para assinatura)", "status": "Concluída", "pct": 1.0, "ini": 45951.375, "fim": 45952.7083, "resp": "Letícia", "notas": "", "tipo": "governanca"}, {"num": "26.15", "nome": "Elaboração dos termos para assinatura", "status": "Concluída", "pct": 1.0, "ini": 45952.375, "fim": 45953.7083, "resp": "Letícia", "notas": "", "tipo": "governanca"}, {"num": "26.16", "nome": "Acompanhamento assinaturas", "status": "Atrasada", "pct": 0.95, "ini": 45954.375, "fim": 46080.7083, "resp": "Letícia", "notas": "", "tipo": "governanca"}, {"num": "26.17", "nome": "Atualização cadastro LG", "status": "Concluída", "pct": 1.0, "ini": 45950.375, "fim": 45971.7083, "resp": "Letícia", "notas": "", "tipo": "governanca"}, {"num": "26.18", "nome": "Armazenamento e-box", "status": "Concluída", "pct": 1.0, "ini": 46027.375, "fim": 46080.7083, "resp": "Letícia", "notas": "", "tipo": "governanca"}, {"num": "26.19", "nome": "Encerramento projetos - atualizar indicadores Jornada People", "status": "Concluída", "pct": 1.0, "ini": 45916.375, "fim": 46080.7083, "resp": "Letícia", "notas": "", "tipo": "governanca"}, {"num": "27", "nome": "RecuperaPrev", "status": "Atrasada", "pct": 0.05, "ini": 46085.375, "fim": 46085.7083, "resp": "", "notas": "", "tipo": "governanca"}, {"num": "27.1", "nome": "Aguardando análise", "status": "Atrasada", "pct": 0.05, "ini": 46085.375, "fim": 46085.7083, "resp": "Paula", "notas": "", "tipo": "governanca"}, {"num": "28", "nome": "IA para Gente - Inteligência Artificial", "status": "Atrasada", "pct": 0.2, "ini": 46055.375, "fim": 46112.7083, "resp": "", "notas": "", "tipo": "governanca"}, {"num": "28.1", "nome": "Planejamento", "status": "Em andamento", "pct": 0.2, "ini": 46055.375, "fim": 46112.7083, "resp": "Paula", "notas": "", "tipo": "governanca"}, {"num": "28.2", "nome": "Cuidar com IA - Atendimento ágil e empático", "status": "Não iniciada", "pct": 0.0, "ini": null, "fim": null, "resp": "Paula", "notas": "", "tipo": "governanca"}, {"num": "28.3", "nome": "Fluxo com IA e integração de sistemas - Automação do manual e repetitivo", "status": "Não iniciada", "pct": 0.0, "ini": null, "fim": null, "resp": "Paula", "notas": "", "tipo": "governanca"}, {"num": "28.4", "nome": "Decidir com IA - People Analytics", "status": "Não iniciada", "pct": 0.0, "ini": null, "fim": null, "resp": "Paula", "notas": "", "tipo": "governanca"}, {"num": "29", "nome": "SmartAtesta - Implantação Closecare", "status": "Em andamento", "pct": 0.57, "ini": 45999.375, "fim": 46262.7083, "resp": "", "notas": "", "tipo": "governanca"}, {"num": "29.1", "nome": "Desenho", "status": "Concluída", "pct": 1.0, "ini": 45999.375, "fim": 45999.7083, "resp": "Juliana", "notas": "", "tipo": "governanca"}, {"num": "29.2", "nome": "Configuração", "status": "Concluída", "pct": 1.0, "ini": 45999.375, "fim": 46010.7083, "resp": "Juliana", "notas": "", "tipo": "governanca"}, {"num": "29.3", "nome": "Testes", "status": "Concluída", "pct": 1.0, "ini": 46027.375, "fim": 46052.7083, "resp": "Juliana", "notas": "", "tipo": "governanca"}, {"num": "29.4", "nome": "Treinamento", "status": "Concluída", "pct": 1.0, "ini": 46027.375, "fim": 46052.7083, "resp": "Juliana", "notas": "", "tipo": "governanca"}, {"num": "29.5", "nome": "Comunicação Geral", "status": "Concluída", "pct": 1.0, "ini": 46034.375, "fim": 46052.7083, "resp": "Juliana", "notas": "", "tipo": "governanca"}, {"num": "29.6", "nome": "Go-live", "status": "Concluída", "pct": 1.0, "ini": 46052.375, "fim": 46055.7083, "resp": "Juliana", "notas": "", "tipo": "governanca"}, {"num": "29.7", "nome": "Estabilização", "status": "Concluída", "pct": 1.0, "ini": 46055.375, "fim": 46080.7083, "resp": "Juliana", "notas": "", "tipo": "governanca"}, {"num": "29.8", "nome": "Eficiência", "status": "Em andamento", "pct": 0.7, "ini": 46055.375, "fim": 46171.7083, "resp": "Juliana", "notas": "", "tipo": "governanca"}, {"num": "29.9", "nome": "Atualizar normativo e manuais de procedimento", "status": "Atrasada", "pct": 0.5, "ini": 46085.375, "fim": 46085.7083, "resp": "Juliana", "notas": "", "tipo": "governanca"}, {"num": "29.10", "nome": "Integrações", "status": "Não iniciada", "pct": 0.0, "ini": 46143.375, "fim": 46262.7083, "resp": "", "notas": "", "tipo": "governanca"}, {"num": "30", "nome": "Acordo Banco de Horas", "status": "Em andamento", "pct": 0.6, "ini": 46112.375, "fim": 46203.7083, "resp": "", "notas": "", "tipo": "governanca"}, {"num": "30.1", "nome": "Reavaliar a Minuta", "status": "Concluída", "pct": 1.0, "ini": 46112.375, "fim": 46141.7083, "resp": "Paula", "notas": "", "tipo": "governanca"}, {"num": "30.2", "nome": "Analise do sindicato", "status": "Concluída", "pct": 1.0, "ini": 46142.375, "fim": 46171.7083, "resp": "Paula", "notas": "", "tipo": "governanca"}, {"num": "30.3", "nome": "Agendar workshop interno para explicação das regras", "status": "Concluída", "pct": 1.0, "ini": 46178.375, "fim": 46196.7083, "resp": "Paula", "notas": "", "tipo": "governanca"}, {"num": "30.4", "nome": "Aprovação dos colaboradores", "status": "Não iniciada", "pct": 0.0, "ini": 46202.375, "fim": 46202.7083, "resp": "Paula", "notas": "", "tipo": "governanca"}, {"num": "30.5", "nome": "Comunicação Geral", "status": "Não iniciada", "pct": 0.0, "ini": 46177.375, "fim": 46177.7083, "resp": "Paula", "notas": "", "tipo": "governanca"}, {"num": "30.6", "nome": "Gestão dos documentos", "status": "Não iniciada", "pct": 0.0, "ini": 46177.375, "fim": 46203.7083, "resp": "Paula", "notas": "", "tipo": "governanca"}, {"num": "30.7", "nome": "Regras de Ponto e Folha", "status": "Não iniciada", "pct": 0.0, "ini": 46181.375, "fim": 46203.7083, "resp": "Paula", "notas": "", "tipo": "governanca"}, {"num": "31", "nome": "People Performance - Análise de Produtividade pela ferramenta Mutant ou Levantamento Interno", "status": "Cancelada", "pct": 1.0, "ini": 45658.375, "fim": 46265.7083, "resp": "", "notas": "", "tipo": "governanca"}, {"num": "31.1", "nome": "Apresentação comercial Mutant", "status": "Concluída", "pct": 1.0, "ini": 46085.375, "fim": 46085.7083, "resp": "", "notas": "", "tipo": "governanca"}, {"num": "31.2", "nome": "Avaliação interna", "status": "Atrasada", "pct": 1.0, "ini": 46085.375, "fim": 46085.7083, "resp": "", "notas": "", "tipo": "governanca"}, {"num": "31.3", "nome": "Avaliar funcionalidades", "status": "Não iniciada", "pct": 1.0, "ini": 46085.375, "fim": 46085.7083, "resp": "", "notas": "", "tipo": "governanca"}, {"num": "31.4", "nome": "Mapear Integração", "status": "Não iniciada", "pct": 1.0, "ini": 46085.375, "fim": 46085.7083, "resp": "", "notas": "", "tipo": "governanca"}, {"num": "31.5", "nome": "Apresentação de governança", "status": "Não iniciada", "pct": 1.0, "ini": 46085.375, "fim": 46085.7083, "resp": "", "notas": "", "tipo": "governanca"}, {"num": "31.6", "nome": "Experiência do usuário", "status": "Não iniciada", "pct": 1.0, "ini": 46085.375, "fim": 46085.7083, "resp": "", "notas": "", "tipo": "governanca"}, {"num": "31.7", "nome": "Levantamento de Custo & ROI", "status": "Não iniciada", "pct": 1.0, "ini": 46085.375, "fim": 46085.7083, "resp": "", "notas": "", "tipo": "governanca"}, {"num": "31.8", "nome": "Gerencial", "status": "Não iniciada", "pct": 1.0, "ini": 46085.375, "fim": 46085.7083, "resp": "", "notas": "", "tipo": "governanca"}, {"num": "31.9", "nome": "Recomendação final", "status": "Não iniciada", "pct": 1.0, "ini": 46085.375, "fim": 46085.7083, "resp": "", "notas": "", "tipo": "governanca"}, {"num": "31.10", "nome": "Aprovado x Reprovado", "status": "Não iniciada", "pct": 1.0, "ini": 45658.375, "fim": 46265.7083, "resp": "", "notas": "", "tipo": "governanca"}, {"num": "31.11", "nome": "Plano B sem ferramenta de apoio para Produtividade", "status": "Não iniciada", "pct": 1.0, "ini": 46055.375, "fim": 46085.7083, "resp": "", "notas": "", "tipo": "governanca"}, {"num": "31.11.1", "nome": "Mapa de Atividades (por área e pessoa)", "status": "Não iniciada", "pct": 1.0, "ini": 46085.375, "fim": 46085.7083, "resp": "", "notas": "", "tipo": "governanca"}, {"num": "31.11.2", "nome": "\"Medição de esforço semanal", "status": "Não iniciada", "pct": 1.0, "ini": 46085.375, "fim": 46085.7083, "resp": "", "notas": "", "tipo": "governanca"}, {"num": "31.11.3", "nome": "- Podemos utilizar os manuais internos e pontuar cada atividade\"", "status": "Não iniciada", "pct": 1.0, "ini": 46085.375, "fim": 46085.7083, "resp": "", "notas": "", "tipo": "governanca"}, {"num": "31.11.4", "nome": "Análise de Capacidade x Demanda", "status": "Não iniciada", "pct": 1.0, "ini": 46085.375, "fim": 46085.7083, "resp": "", "notas": "", "tipo": "governanca"}, {"num": "31.11.5", "nome": "Dashboards", "status": "Não iniciada", "pct": 1.0, "ini": 46085.375, "fim": 46085.7083, "resp": "", "notas": "", "tipo": "governanca"}, {"num": "31.11.6", "nome": "Plano de ação para melhor eficiência", "status": "Não iniciada", "pct": 1.0, "ini": 46055.375, "fim": 46055.7083, "resp": "", "notas": "", "tipo": "governanca"}, {"num": "32", "nome": "Programa de SST- Gente Segura", "status": "Em andamento", "pct": 0.31, "ini": 46055.375, "fim": 46414.7083, "resp": "", "notas": "", "tipo": "governanca"}, {"num": "32.1", "nome": "Comunicação de lançamento do Programa", "status": "Concluída", "pct": 1.0, "ini": 46056.375, "fim": 46063.7083, "resp": "", "notas": "", "tipo": "governanca"}, {"num": "32.2", "nome": "SIPAT – Semana Interna de Prevenção de Acidentes", "status": "Em andamento", "pct": 0.59, "ini": 46143.375, "fim": 46220.7083, "resp": "", "notas": "", "tipo": "governanca"}, {"num": "32.2.1", "nome": "Planejamento do programação anual com temas de saúde, segurança e bem-estar", "status": "Em andamento", "pct": 0.9, "ini": 46146.375, "fim": 46149.7083, "resp": "", "notas": "", "tipo": "governanca"}, {"num": "32.2.2", "nome": "Definição de palestras, vídeos, ações educativas, workshops e atividades interativas.", "status": "Em andamento", "pct": 0.9, "ini": 46146.375, "fim": 46163.7083, "resp": "", "notas": "", "tipo": "governanca"}, {"num": "32.2.3", "nome": "Buscar fornecedores parceiro para brindes", "status": "Em andamento", "pct": 0.8, "ini": 46160.375, "fim": 46163.7083, "resp": "", "notas": "", "tipo": "governanca"}, {"num": "32.2.4", "nome": "Ajustar com a Weeks as ações feitas online", "status": "Em andamento", "pct": 0.15, "ini": 46167.375, "fim": 46168.7083, "resp": "", "notas": "", "tipo": "governanca"}, {"num": "32.2.5", "nome": "Definir ranking e brindes", "status": "Em andamento", "pct": 0.05, "ini": 46143.375, "fim": 46143.7083, "resp": "", "notas": "", "tipo": "governanca"}, {"num": "32.2.6", "nome": "Plano de comunicação", "status": "Em andamento", "pct": 0.05, "ini": 46181.375, "fim": 46184.7083, "resp": "", "notas": "", "tipo": "governanca"}, {"num": "32.2.7", "nome": "Semana da SIPAT", "status": "Não iniciada", "pct": 0.0, "ini": 46216.375, "fim": 46220.7083, "resp": "", "notas": "", "tipo": "governanca"}, {"num": "32.3", "nome": "Brigada de Incêndio (vence em out/26)", "status": "Não iniciada", "pct": 0.0, "ini": 46209.375, "fim": 46357.7083, "resp": "", "notas": "", "tipo": "governanca"}, {"num": "32.3.1", "nome": "Levantamento da quantidade necessária de colaboradores Brigadistas", "status": "Não iniciada", "pct": 0.0, "ini": 46209.375, "fim": 46212.7083, "resp": "", "notas": "", "tipo": "governanca"}, {"num": "32.3.2", "nome": "Cotação do treinamento com entidade especializada / aprovação do custo", "status": "Não iniciada", "pct": 0.0, "ini": 46216.375, "fim": 46217.7083, "resp": "", "notas": "", "tipo": "governanca"}, {"num": "32.3.3", "nome": "Reserva do espaço para o treinamento presencial no Tower ou no GP", "status": "Não iniciada", "pct": 0.0, "ini": 46218.375, "fim": 46220.7083, "resp": "", "notas": "", "tipo": "governanca"}, {"num": "32.3.4", "nome": "Plano de comunicação", "status": "Não iniciada", "pct": 0.0, "ini": 46230.375, "fim": 46234.7083, "resp": "", "notas": "", "tipo": "governanca"}, {"num": "32.3.5", "nome": "Publicação para composição dos voluntáriados ou designados para compor a brigada", "status": "Não iniciada", "pct": 0.0, "ini": 46244.375, "fim": 46247.7083, "resp": "", "notas": "", "tipo": "governanca"}, {"num": "32.3.6", "nome": "Realização do treinamento anual da brigada de incêndio e atividades práticas de evacuação, combate ao fogo e primeiros socorros", "status": "Não iniciada", "pct": 0.0, "ini": 46253.375, "fim": 46253.7083, "resp": "", "notas": "", "tipo": "governanca"}, {"num": "32.3.7", "nome": "Atualização dos certificados de participação", "status": "Não iniciada", "pct": 0.0, "ini": 46255.375, "fim": 46255.7083, "resp": "", "notas": "", "tipo": "governanca"}, {"num": "32.3.8", "nome": "Comunicação dos Brigadistas atuais e atualização na intranet na página da CIPA", "status": "Não iniciada", "pct": 0.0, "ini": null, "fim": null, "resp": "", "notas": "", "tipo": "governanca"}, {"num": "32.3.9", "nome": "Acompanhamento de desligados que compõe o comitê", "status": "Não iniciada", "pct": 0.0, "ini": 46357.375, "fim": 46357.7083, "resp": "", "notas": "", "tipo": "governanca"}, {"num": "32.4", "nome": "CIPA – Comissão Interna de Prevenção de Acidentes", "status": "Não iniciada", "pct": 0.0, "ini": 46296.375, "fim": 46401.7083, "resp": "", "notas": "", "tipo": "governanca"}, {"num": "32.4.1", "nome": "Levantamento da quantidade necessária de colaboradores cipeiros e desinados pela CVC", "status": "Não iniciada", "pct": 0.0, "ini": 46296.375, "fim": 46300.7083, "resp": "", "notas": "", "tipo": "governanca"}, {"num": "32.4.2", "nome": "Plano de comunicação", "status": "Não iniciada", "pct": 0.0, "ini": 46318.375, "fim": 46318.7083, "resp": "", "notas": "", "tipo": "governanca"}, {"num": "32.4.3", "nome": "Atualização da explicação para gestores e pubicação com as datas definidas de cada etapa", "status": "Não iniciada", "pct": 0.0, "ini": 46356.375, "fim": 46359.7083, "resp": "", "notas": "", "tipo": "governanca"}, {"num": "32.4.4", "nome": "Campanha para candidatura da CIPA", "status": "Não iniciada", "pct": 0.0, "ini": 46360.375, "fim": 46360.7083, "resp": "", "notas": "", "tipo": "governanca"}, {"num": "32.4.5", "nome": "Eleição dos membros", "status": "Não iniciada", "pct": 0.0, "ini": 46363.375, "fim": 46365.7083, "resp": "", "notas": "", "tipo": "governanca"}, {"num": "32.4.6", "nome": "Escolha dos designados", "status": "Não iniciada", "pct": 0.0, "ini": 46366.375, "fim": 46374.7083, "resp": "", "notas": "", "tipo": "governanca"}, {"num": "32.4.7", "nome": "Capacitação dos membros do comitê", "status": "Não iniciada", "pct": 0.0, "ini": 46365.375, "fim": 46365.7083, "resp": "", "notas": "", "tipo": "governanca"}, {"num": "32.4.8", "nome": "Comunicado oficial e atualização da página na Intranet com a formação do novo comitê", "status": "Não iniciada", "pct": 0.0, "ini": 46398.375, "fim": 46401.7083, "resp": "", "notas": "", "tipo": "governanca"}, {"num": "32.4.9", "nome": "Planejar reuniões periódicas com pauta estruturada", "status": "Não iniciada", "pct": 0.0, "ini": 46296.375, "fim": 46296.7083, "resp": "", "notas": "", "tipo": "governanca"}, {"num": "32.4.10", "nome": "Acompanhamento de desligados que compõe o comitê", "status": "Não iniciada", "pct": 0.0, "ini": 46296.375, "fim": 46325.7083, "resp": "", "notas": "", "tipo": "governanca"}, {"num": "32.5", "nome": "Simulado de Incendio - Gente Segura", "status": "Em andamento", "pct": 0.31, "ini": 46113.375, "fim": 46171.7083, "resp": "", "notas": "", "tipo": "governanca"}, {"num": "32.5.1", "nome": "Plano de Simulado", "status": "Concluída", "pct": 1.0, "ini": 46120.375, "fim": 46128.7083, "resp": "", "notas": "", "tipo": "governanca"}, {"num": "32.5.2", "nome": "Comunicação e organização", "status": "Concluída", "pct": 1.0, "ini": 46133.375, "fim": 46133.7083, "resp": "", "notas": "", "tipo": "governanca"}, {"num": "32.5.3", "nome": "Execução (Dia do simulado)", "status": "Concluída", "pct": 1.0, "ini": 46133.375, "fim": 46133.7083, "resp": "", "notas": "", "tipo": "governanca"}, {"num": "32.5.4", "nome": "Acompanhamento", "status": "Concluída", "pct": 1.0, "ini": 46133.375, "fim": 46135.7083, "resp": "", "notas": "", "tipo": "governanca"}, {"num": "32.5.5", "nome": "Avaliação pós simulado", "status": "Em andamento", "pct": 0.5, "ini": 46139.375, "fim": 46141.7083, "resp": "", "notas": "", "tipo": "governanca"}, {"num": "32.5.6", "nome": "Plano de ação e melhorias", "status": "Em andamento", "pct": 0.1, "ini": 46113.375, "fim": 46171.7083, "resp": "", "notas": "", "tipo": "governanca"}, {"num": "32.6", "nome": "Cuidados com Ergonomia e Ambiente de Trabalho", "status": "Em andamento", "pct": 0.19, "ini": 46055.375, "fim": 46414.7083, "resp": "", "notas": "", "tipo": "governanca"}, {"num": "32.6.1", "nome": "Avaliação ergonômica do posto de trabalho", "status": "Standby", "pct": 0.27, "ini": 46055.375, "fim": 46385.7083, "resp": "", "notas": "", "tipo": "governanca"}, {"num": "32.6.2", "nome": "Ação disciplinar", "status": "Standby", "pct": 0.0, "ini": 46083.375, "fim": 46414.7083, "resp": "", "notas": "", "tipo": "governanca"}, {"num": "32.6.3", "nome": "Orientações práticas", "status": "Em andamento", "pct": 0.2, "ini": 46055.375, "fim": 46385.7083, "resp": "", "notas": "", "tipo": "governanca"}, {"num": "32.6.4", "nome": "Controle das solicitações e substituições de itens ergonomicos", "status": "Em andamento", "pct": 0.3, "ini": 46055.375, "fim": 46385.7083, "resp": "", "notas": "", "tipo": "governanca"}, {"num": "32.7", "nome": "Acompanhamento de PCDs", "status": "Em andamento", "pct": 0.49, "ini": 46055.375, "fim": 46385.7083, "resp": "", "notas": "", "tipo": "governanca"}, {"num": "32.7.1", "nome": "Avaliação individual das necessidades e adequação do posto de trabalho", "status": "Standby", "pct": 0.27, "ini": 46055.375, "fim": 46385.7083, "resp": "", "notas": "", "tipo": "governanca"}, {"num": "32.7.2", "nome": "Acompanhamento periódico junto com a área de saúde", "status": "Em andamento", "pct": 0.2, "ini": 46055.375, "fim": 46385.7083, "resp": "", "notas": "", "tipo": "governanca"}, {"num": "32.7.3", "nome": "Participação das rodas de conversas do comitê de diversidade e registros do plano de ação", "status": "Concluída", "pct": 1.0, "ini": 46055.375, "fim": 46385.7083, "resp": "", "notas": "", "tipo": "governanca"}, {"num": "32.8", "nome": "Procedimentos de Emergência", "status": "Não iniciada", "pct": 0.0, "ini": 46335.375, "fim": 46338.7083, "resp": "", "notas": "", "tipo": "governanca"}, {"num": "32.8.1", "nome": "Revisão junto com facilities e aprovação do procedimento", "status": "Não iniciada", "pct": 0.0, "ini": 46335.375, "fim": 46338.7083, "resp": "", "notas": "", "tipo": "governanca"}, {"num": "32.8.2", "nome": "Atualizar materiais visuais e online na pagina da intranet", "status": "Não iniciada", "pct": 0.0, "ini": 46335.375, "fim": 46338.7083, "resp": "", "notas": "", "tipo": "governanca"}, {"num": "32.8.3", "nome": "Levar na pauta de comite da CIPA e brigada o procedimento revisado", "status": "Não iniciada", "pct": 0.0, "ini": null, "fim": null, "resp": "", "notas": "", "tipo": "governanca"}, {"num": "32.9", "nome": "Acompanhamento da Loja CVC Interna", "status": "Concluída", "pct": 1.0, "ini": 46062.375, "fim": 46062.7083, "resp": "", "notas": "", "tipo": "governanca"}, {"num": "32.9.1", "nome": "Análise prévia dos riscos da obra/montagem", "status": "Concluída", "pct": 1.0, "ini": 46062.375, "fim": 46062.7083, "resp": "", "notas": "", "tipo": "governanca"}, {"num": "32.9.2", "nome": "Orientação sobre normas internas de SST para terceiros", "status": "Concluída", "pct": 1.0, "ini": 46062.375, "fim": 46062.7083, "resp": "", "notas": "", "tipo": "governanca"}, {"num": "32.9.3", "nome": "Avaliar a delimitação da área de risco", "status": "Concluída", "pct": 1.0, "ini": 46062.375, "fim": 46062.7083, "resp": "", "notas": "", "tipo": "governanca"}, {"num": "32.9.4", "nome": "Acompanhamento presencial e avaliação de utilização de EPIs", "status": "Concluída", "pct": 1.0, "ini": 46062.375, "fim": 46062.7083, "resp": "", "notas": "", "tipo": "governanca"}, {"num": "33", "nome": "ConectaRH", "status": "Em andamento", "pct": 0.36, "ini": 46076.375, "fim": 46387.7083, "resp": "", "notas": "", "tipo": "governanca"}, {"num": "33.1", "nome": "Bate Papo com Gente", "status": "Em andamento", "pct": 0.36, "ini": 46076.375, "fim": 46387.7083, "resp": "Juliana", "notas": "", "tipo": "governanca"}, {"num": "33.2", "nome": "Live de férias - Programação geral de 2026", "status": "Concluída", "pct": 1.0, "ini": 46090.375, "fim": 46093.7083, "resp": "Juliana", "notas": "", "tipo": "governanca"}, {"num": "33.3", "nome": "Live explicação acordo PPR", "status": "Concluída", "pct": 1.0, "ini": 46097.375, "fim": 46100.7083, "resp": "Juliana", "notas": "", "tipo": "governanca"}, {"num": "33.4", "nome": "Live assembleia de acordo PPR", "status": "Concluída", "pct": 1.0, "ini": 46097.375, "fim": 46111.7083, "resp": "Juliana", "notas": "", "tipo": "governanca"}, {"num": "33.5", "nome": "Vídeo NR01", "status": "Atrasada", "pct": 0.4, "ini": 46118.375, "fim": 46120.7083, "resp": "Juliana", "notas": "", "tipo": "governanca"}, {"num": "33.6", "nome": "Live Ponto e Banco (se necessário)", "status": "Cancelada", "pct": 1.0, "ini": 46146.375, "fim": 46146.7083, "resp": "Juliana", "notas": "", "tipo": "governanca"}, {"num": "33.7", "nome": "WS Comissão:", "status": "Cancelada", "pct": 0.0, "ini": 46171.375, "fim": 46171.7083, "resp": "Juliana", "notas": "", "tipo": "governanca"}, {"num": "33.8", "nome": "Live Explicação do acordo de banco", "status": "Em andamento", "pct": 0.0, "ini": 46196.375, "fim": 46196.7083, "resp": "Juliana", "notas": "", "tipo": "governanca"}, {"num": "33.9", "nome": "Live Assembleia de Acordo banco", "status": "Não iniciada", "pct": 0.0, "ini": 46202.375, "fim": 46202.7083, "resp": "Juliana", "notas": "", "tipo": "governanca"}, {"num": "33.10", "nome": "Atestados e afastamentos (com closecare - se necessário)", "status": "Cancelada", "pct": 0.0, "ini": 46273.375, "fim": 46273.7083, "resp": "Juliana", "notas": "", "tipo": "governanca"}, {"num": "33.11", "nome": "Live VT + Gestão inteligente", "status": "Não iniciada", "pct": 0.0, "ini": 46314.375, "fim": 46314.7083, "resp": "Juliana", "notas": "", "tipo": "governanca"}, {"num": "33.12", "nome": "Vídeo Programação de férias 2027", "status": "Não iniciada", "pct": 0.0, "ini": 46342.375, "fim": 46342.7083, "resp": "Juliana", "notas": "", "tipo": "governanca"}, {"num": "33.13", "nome": "Vídeo 13º salário", "status": "Não iniciada", "pct": 0.0, "ini": 46342.375, "fim": 46342.7083, "resp": "Juliana", "notas": "", "tipo": "governanca"}, {"num": "33.14", "nome": "Reforço vídeo 13º salário", "status": "Não iniciada", "pct": 0.0, "ini": 46363.375, "fim": 46373.7083, "resp": "Juliana", "notas": "", "tipo": "governanca"}, {"num": "33.15", "nome": "Programação anual de férias 2026/2027", "status": "Não iniciada", "pct": 0.0, "ini": 46357.375, "fim": 46387.7083, "resp": "Juliana", "notas": "", "tipo": "governanca"}, {"num": "34", "nome": "Unificação FGTS", "status": "Em andamento", "pct": 0.87, "ini": 45677.375, "fim": 46142.7083, "resp": "", "notas": "", "tipo": "governanca"}, {"num": "34.1", "nome": "Não respondentes", "status": "Concluída", "pct": 1.0, "ini": 45678.375, "fim": 45698.7083, "resp": "Maria", "notas": "", "tipo": "governanca"}, {"num": "34.2", "nome": "Análise extratos", "status": "Concluída", "pct": 1.0, "ini": 45677.375, "fim": 45715.7083, "resp": "Maria", "notas": "", "tipo": "governanca"}, {"num": "34.3", "nome": "Preencher layout Caixa", "status": "Concluída", "pct": 1.0, "ini": 46090.375, "fim": 46097.7083, "resp": "Maria", "notas": "", "tipo": "governanca"}, {"num": "34.4", "nome": "Acompanhar retorno Caixa", "status": "Em andamento", "pct": 0.8, "ini": 46023.375, "fim": 46142.7083, "resp": "Maria", "notas": "", "tipo": "governanca"}, {"num": "35", "nome": "Serviço de formalização E-box", "status": "Em andamento", "pct": 0.99, "ini": 45658.375, "fim": 46234.7083, "resp": "", "notas": "", "tipo": "governanca"}, {"num": "35.1", "nome": "Pastas duplicadas", "status": "Em andamento", "pct": 1.0, "ini": 46023.375, "fim": 46264.375, "resp": "Maria", "notas": "", "tipo": "governanca"}, {"num": "35.1.1", "nome": "Identificar colaboradores com pasta duplicada, gerando apontamentos incorretos", "status": "Concluída", "pct": 1.0, "ini": 46023.375, "fim": 46264.375, "resp": "", "notas": "", "tipo": "governanca"}, {"num": "35.1.2", "nome": "Fazer a transferências do documento para a pasta que contém maior quantidade de documento", "status": "Concluída", "pct": 1.0, "ini": 46085.375, "fim": 46264.375, "resp": "", "notas": "", "tipo": "governanca"}, {"num": "35.1.3", "nome": "Inativar a pasta anterior que deve ficar vazia antes da exclusão", "status": "Concluída", "pct": 1.0, "ini": 46085.375, "fim": 46264.375, "resp": "", "notas": "", "tipo": "governanca"}, {"num": "35.1.4", "nome": "Revisar parâmetro para “trava” de importação dos dados duplicados", "status": "Concluída", "pct": 1.0, "ini": 46085.375, "fim": 46264.375, "resp": "", "notas": "", "tipo": "governanca"}, {"num": "35.2", "nome": "Status colaboradores", "status": "Em andamento", "pct": 0.99, "ini": 45658.375, "fim": 46264.375, "resp": "Maria", "notas": "", "tipo": "governanca"}, {"num": "35.2.1", "nome": "Validar data de demissão dos colaboradores", "status": "Concluída", "pct": 1.0, "ini": 45658.375, "fim": 45658.7083, "resp": "", "notas": "", "tipo": "governanca"}, {"num": "35.2.2", "nome": "Inativar as 5 pessoas", "status": "Concluída", "pct": 1.0, "ini": 46085.375, "fim": 46085.7083, "resp": "", "notas": "", "tipo": "governanca"}, {"num": "35.2.3", "nome": "Verificar com a E-box se as 1962 precisa ser feito algo para atualização via carga de dados", "status": "Não iniciada", "pct": 0.0, "ini": null, "fim": null, "resp": "", "notas": "", "tipo": "governanca"}, {"num": "35.3", "nome": "Carta proposta", "status": "Concluída", "pct": 1.0, "ini": 45658.375, "fim": 46085.7083, "resp": "Maria", "notas": "", "tipo": "governanca"}, {"num": "35.3.1", "nome": "Classificações dos níveis de criticidade da carta proposta", "status": "Concluída", "pct": 1.0, "ini": 45658.375, "fim": 45658.7083, "resp": "", "notas": "", "tipo": "governanca"}, {"num": "35.3.2", "nome": "Solicitar à E-box ajuste dos níveis de criticidade", "status": "Concluída", "pct": 1.0, "ini": 46085.375, "fim": 46085.7083, "resp": "", "notas": "", "tipo": "governanca"}, {"num": "35.4", "nome": "Documentos faltantes", "status": "Em andamento", "pct": 0.1, "ini": 46085.375, "fim": 46264.375, "resp": "Maria", "notas": "", "tipo": "governanca"}, {"num": "35.4.1", "nome": "Avaliar cada documento apontado como faltante", "status": "Em andamento", "pct": 0.1, "ini": 46085.375, "fim": 46264.375, "resp": "", "notas": "", "tipo": "governanca"}, {"num": "35.4.2", "nome": "Contratos de trabalho", "status": "Em andamento", "pct": 0.1, "ini": 46085.375, "fim": 46264.375, "resp": "", "notas": "", "tipo": "governanca"}, {"num": "35.4.3", "nome": "Rescisão", "status": "Não iniciada", "pct": 0.0, "ini": null, "fim": 46264.375, "resp": "", "notas": "", "tipo": "governanca"}, {"num": "35.5", "nome": "Pastas inativas", "status": "Concluída", "pct": 1.0, "ini": 45658.375, "fim": 45658.7083, "resp": "Maria", "notas": "", "tipo": "governanca"}, {"num": "35.5.1", "nome": "Retirar as pendências/obrigatoriedade do quadro de avisos (Ficha de registro, RP)", "status": "Concluída", "pct": 1.0, "ini": 45658.375, "fim": 45658.7083, "resp": "", "notas": "", "tipo": "governanca"}, {"num": "35.6", "nome": "Seguro de Vida", "status": "Em andamento", "pct": 0.1, "ini": 46085.375, "fim": 46264.375, "resp": "Maria", "notas": "", "tipo": "governanca"}, {"num": "35.6.1", "nome": "Ajustar a rotina de armazenamento do documento de seguro de vida na integração do LG", "status": "Não iniciada", "pct": 0.1, "ini": 46085.375, "fim": 46264.375, "resp": "", "notas": "", "tipo": "governanca"}, {"num": "35.6.2", "nome": "Realizar testes", "status": "Não iniciada", "pct": 0.0, "ini": null, "fim": 46264.375, "resp": "", "notas": "", "tipo": "governanca"}, {"num": "35.6.3", "nome": "Reorganizar os documentos armazenados incorretamente", "status": "Não iniciada", "pct": 0.0, "ini": null, "fim": 46264.375, "resp": "", "notas": "", "tipo": "governanca"}, {"num": "35.7", "nome": "Requisição de Pessoal", "status": "Concluída", "pct": 1.0, "ini": 45658.375, "fim": 45658.7083, "resp": "Maria", "notas": "", "tipo": "governanca"}, {"num": "35.7.1", "nome": "Retirar a obrigatoriedade de armazenamento das RPs", "status": "Concluída", "pct": 1.0, "ini": 45658.375, "fim": 45658.7083, "resp": "", "notas": "", "tipo": "governanca"}, {"num": "35.8", "nome": "Admissão/Demissão", "status": "Em andamento", "pct": 0.1, "ini": 46085.375, "fim": 46264.375, "resp": "Maria", "notas": "", "tipo": "governanca"}, {"num": "35.8.1", "nome": "Analisar com a E-box, pessoas que estão com formalização apontando como falta de documento, mas o documento foi imputado a uma data anterior a subida do documento", "status": "Em andamento", "pct": 0.1, "ini": 46085.375, "fim": 46264.375, "resp": "", "notas": "", "tipo": "governanca"}, {"num": "35.9", "nome": "Rescisão / Aviso Prévio / Carta de Demissão", "status": "Em andamento", "pct": 0.1, "ini": 46085.375, "fim": 46264.375, "resp": "Maria", "notas": "", "tipo": "governanca"}, {"num": "35.9.1", "nome": "Incluir a obrigatoriedade somente após a data de demissão inserida", "status": "Não iniciada", "pct": 0.1, "ini": 46085.375, "fim": 46264.375, "resp": "", "notas": "", "tipo": "governanca"}, {"num": "35.10", "nome": "Carta proposta", "status": "Cancelada", "pct": 1.0, "ini": 45658.375, "fim": 46234.7083, "resp": "Maria", "notas": "", "tipo": "governanca"}, {"num": "35.10.1", "nome": "Integração com a Propay + mudança de rota das pastas", "status": "Não iniciada", "pct": 1.0, "ini": 45658.375, "fim": 46234.7083, "resp": "Maria", "notas": "", "tipo": "governanca"}, {"num": "36", "nome": "Estudo Redução de Jornada", "status": "Em andamento", "pct": 0.98, "ini": 46085.375, "fim": 46155.7083, "resp": "", "notas": "", "tipo": "governanca"}, {"num": "36.1", "nome": "Realizar o levantamento das escalas", "status": "Concluída", "pct": 1.0, "ini": 46085.375, "fim": 46129.7083, "resp": "Paula", "notas": "", "tipo": "governanca"}, {"num": "36.2", "nome": "Apresentação do estudo", "status": "Concluída", "pct": 1.0, "ini": 46090.375, "fim": 46142.7083, "resp": "Paula", "notas": "", "tipo": "governanca"}, {"num": "36.3", "nome": "Análise de custo e estrutura", "status": "Concluída", "pct": 1.0, "ini": 46085.375, "fim": 46085.7083, "resp": "Paula", "notas": "", "tipo": "governanca"}, {"num": "36.4", "nome": "Análise Jurídico trabalhista", "status": "Concluída", "pct": 1.0, "ini": 46148.375, "fim": 46155.7083, "resp": "Paula", "notas": "", "tipo": "governanca"}, {"num": "36.5", "nome": "Atualizar o estudo a cada passo da aprovação da nova Lei", "status": "Em andamento", "pct": 0.8, "ini": 46085.375, "fim": 46085.7083, "resp": "Paula", "notas": "", "tipo": "governanca"}, {"num": "36.6", "nome": "Desdobramento com as áreas", "status": "Em andamento", "pct": 0.1, "ini": 46085.375, "fim": 46085.7083, "resp": "Paula", "notas": "", "tipo": "governanca"}, {"num": "36.7", "nome": "Estudo redução de jornada para Franquias", "status": "Em andamento", "pct": 0.1, "ini": 46085.375, "fim": 46085.7083, "resp": "Juliana", "notas": "", "tipo": "governanca"}, {"num": "37", "nome": "Rotinas Folha de Pagamento", "status": "Em andamento", "pct": 0, "ini": null, "fim": null, "resp": "", "notas": "", "tipo": "rotina"}, {"num": "37.1", "nome": "Notificação e-social", "status": "Em andamento", "pct": 0, "ini": null, "fim": 46209.375, "resp": "", "notas": "Prazo para 10/07: 400 mil está correto, 6 mil deve ser ajustado pela AG. Passamos os acertos para Ag Capital - 02/07. Cobrar a Ag Capital dos ajustes", "tipo": "rotina"}];
+
+const SAVED_DATA = [];
+const SAVED_AUDIT = [];
+const EPOCH = new Date(1899,11,30);
+function xlDate(s){ if(!s||isNaN(s)) return null; return new Date(EPOCH.getTime()+Math.round(s*86400000)); }
+function toSerial(str){ if(!str) return null; return (new Date(str+'T12:00:00')-EPOCH)/86400000; }
+function fmt(d){ if(!d) return '—'; return d.toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit',year:'numeric'}); }
+function daysLeft(d){ if(!d) return null; const t=new Date(); t.setHours(0,0,0,0); return Math.ceil((d-t)/86400000); }
+function getProject(n){ return n.split('.')[0]; }
+function getSubproject(n){ const p=n.split('.'); return p.length>=2?p[0]+'.'+p[1]:null; }
+function isProject(n){ return n.split('.').length===1; }
+function isSubproject(n){ return n.split('.').length===2; }
+function isAction(n){ return n.split('.').length>=3; }
+function nextNum(data,prefix){
+  const depth=prefix.split('.').length+1;
+  const sibs=data.filter(d=>d.num.split('.').length===depth&&d.num.startsWith(prefix+'.'));
+  if(!sibs.length) return prefix+'.1';
+  const max=Math.max(...sibs.map(d=>parseInt(d.num.split('.').pop())||0));
+  return prefix+'.'+(max+1);
+}
+function nextProjectNum(data){
+  const ns=data.filter(d=>isProject(d.num)).map(d=>parseInt(d.num)).filter(n=>!isNaN(n));
+  return ns.length?String(Math.max(...ns)+1):'1';
+}
+function avatar(name){
+  if(!name) return {initials:'?',color:'#9aa0a6'};
+  const parts=name.trim().split(' ');
+  const ini=parts.length>=2?parts[0][0]+parts[parts.length-1][0]:parts[0].slice(0,2);
+  const cols=['#4285f4','#34a853','#fbbc04','#ea4335','#a142f4','#00acc1','#e67c22','#7cb342'];
+  let h=0; for(const c of name) h=(h*31+c.charCodeAt(0))%cols.length;
+  return {initials:ini.toUpperCase(),color:cols[h]};
+}
+const TIPO_CFG = {
+  'governanca': { label:'GOVERNANÇA', bg:'#1a3a5c', tx:'#fff',    barBg:'#1a3a5c', barHover:'#1e4470' },
+  'rotina':     { label:'ROTINA',     bg:'#1a6644', tx:'#fff',    barBg:'#1a6644', barHover:'#1e7a50' },
+};
+function tipoTag(tipo){
+  const c = TIPO_CFG[tipo] || TIPO_CFG['governanca'];
+  return `<span style="background:${c.bg};color:${c.tx};border-radius:4px;padding:1px 6px;font-size:9px;font-weight:800;letter-spacing:.5px;opacity:.85">${c.label}</span>`;
+}
+
+const SC={
+  'Concluída':   {bg:'#e6f4ea',tx:'#1a7a34',dot:'#34a853'},
+  'Em andamento':{bg:'#e8f0fe',tx:'#1a56cc',dot:'#4285f4'},
+  'Atrasada':    {bg:'#fce8e6',tx:'#c5221f',dot:'#ea4335'},
+  'Não iniciada':{bg:'#f1f3f4',tx:'#5f6368',dot:'#9aa0a6'},
+  'Standby':     {bg:'#fff8e1',tx:'#b06000',dot:'#fbbc04'},
+  'Cancelada':   {bg:'#f3e8fd',tx:'#7b1fa2',dot:'#ab47bc'},
+};
+const ALL_STATUSES = Object.keys(SC);
+
+// ── state ────────────────────────────────────────────────────────
+// ── FIREBASE INIT ─────────────────────────────────────────────────
+const firebaseConfig = {
+  apiKey: "AIzaSyDAmkMh7qy6SemshyEMRQfV_CMF47C6uag",
+  authDomain: "painel-paula-ortolani.firebaseapp.com",
+  projectId: "painel-paula-ortolani",
+  storageBucket: "painel-paula-ortolani.firebasestorage.app",
+  messagingSenderId: "413846859315",
+  appId: "1:413846859315:web:41f75917ec9e75649ebd46"
+};
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+
+// ── DATA INIT (from localStorage while Firebase loads) ────────────
+// ── FIREBASE INIT ─────────────────────────────────────────────────
+
+let DATA = (()=>{
+  try{ const s=localStorage.getItem('paula_v17'); if(s) return JSON.parse(s); }catch(e){}
+  return RAW_DATA.map((r,i)=>({...r,id:i,resp:r.resp||'',notas:r.notas||''}));
+})();
+
+let VIEW='dashboard';
+let EXPANDED={};
+let EDIT_ID=null;
+let EDIT_DRAFT={};
+let ADD_CTX=null;
+
+// projects manually moved to canceled tab
+let CANCELED_PROJECTS = new Set(['31']);
+
+// filters for DASHBOARD view
+let DASH_RESP = new Set();
+
+// filters for ALERTS view
+let ALERT_RESP = new Set();
+
+// filters for LIST view
+let FL_STATUS = new Set(ALL_STATUSES);   // all checked
+let FL_RESP   = new Set();               // empty = all
+let FL_SEARCH = '';                      // text search
+let FL_TIPO   = 'all';                   // 'all' | 'governanca' | 'rotina'
+
+// filters for RESP view
+let FR_STATUS = new Set(ALL_STATUSES);
+let FR_RESP   = new Set();
+
+// save() defined below
+function toast(msg,type='ok'){
+  const t=document.getElementById('toast');
+  t.textContent=msg; t.style.background=type==='err'?'#c5221f':'#1a7a34';
+  t.style.color='#fff'; t.style.display='block';
+  setTimeout(()=>t.style.display='none',2800);
+}
+function esc(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+// get all unique resp names in dataset
+function allRespNames(){ return [...new Set(DATA.filter(d=>d.resp&&d.resp.trim()).map(d=>d.resp.trim()))].sort(); }
+
+// ── render helpers ───────────────────────────────────────────────
+function badge(status){
+  const c=SC[status]||SC['Não iniciada'];
+  return `<span class="badge" style="background:${c.bg};color:${c.tx}"><span class="badge-dot" style="background:${c.dot}"></span>${esc(status)}</span>`;
+}
+function alertBadge(item){
+  const d=xlDate(item.fim); const dl=daysLeft(d);
+  if(item.status==='Concluída'||item.status==='Cancelada') return '';
+  if(item.status==='Atrasada') return `<span class="alert-badge" style="background:#fce8e6;color:#c5221f">⚠ ATRASADA</span>`;
+  if(dl!==null&&dl<=0) return `<span class="alert-badge" style="background:#fce8e6;color:#c5221f">⚠ Vencido</span>`;
+  if(dl!==null&&dl<=7) return `<span class="alert-badge" style="background:#fff8e1;color:#b06000">🔔 ${dl}d</span>`;
+  if(dl!==null&&dl<=14) return `<span class="alert-badge" style="background:#e8f0fe;color:#1a56cc">📅 ${dl}d</span>`;
+  return '';
+}
+function progBar(pct){
+  const p=Math.round((pct||0)*100);
+  const col=p===100?'#34a853':p>60?'#4285f4':p>20?'#fbbc04':'#ea4335';
+  return `<div class="prog-wrap"><div class="prog-track"><div class="prog-fill" style="width:${p}%;background:${col}"></div></div><span class="prog-pct">${p}%</span></div>`;
+}
+function avChip(name,size=20){
+  if(!name||!name.trim()) return '';
+  const av=avatar(name);
+  return `<span class="av-chip"><span class="av-circle" style="width:${size}px;height:${size}px;background:${av.color};font-size:${Math.round(size*.42)}px">${av.initials}</span><span class="av-name">${esc(name)}</span></span>`;
+}
+
+// ── filter checkbox builder ───────────────────────────────────────
+function filterBox(title, items, selectedSet, onToggleAll, onToggleItem, idPrefix) {
+  const allChecked = selectedSet.size === 0 || selectedSet.size === items.length;
+  let html = `<div class="filter-box">
+    <div class="filter-box-title">${title}</div>
+    <div class="filter-checks">
+      <label class="fcheck ${allChecked?'checked':''}" style="${allChecked?'background:#e8f0fe;border-color:#4285f4;':''}">
+        <input type="checkbox" ${allChecked?'checked':''} onchange="${onToggleAll}" style="accent-color:#4285f4">
+        <span style="${allChecked?'color:#1a56cc;font-weight:700':''}">Todos</span>
+      </label>`;
+  items.forEach(item => {
+    const isStatus = !!SC[item];
+    const c = SC[item];
+    const checked = selectedSet.size === 0 || selectedSet.has(item);
+    const av = isStatus ? null : avatar(item);
+    const bg = checked ? (c ? c.bg : '#f0f4ff') : '#f8f9fb';
+    const border = checked ? (c ? c.dot : (av ? av.color : '#4285f4')) : '#e0e3e8';
+    const accentColor = c ? c.dot : (av ? av.color : '#4285f4');
+    const txtColor = checked ? (c ? c.tx : '#1c1e21') : '#9aa0a6';
+    const avatarHtml = av ? `<span style="width:16px;height:16px;border-radius:50%;background:${av.color};color:#fff;display:inline-flex;align-items:center;justify-content:center;font-size:7px;font-weight:800;flex-shrink:0">${av.initials}</span>` : '';
+    html += `<label class="fcheck ${checked?'checked':''}" style="background:${bg};border-color:${border}">
+      <input type="checkbox" ${checked?'checked':''} onchange="${onToggleItem(item)}" style="accent-color:${accentColor}">
+      ${avatarHtml}<span style="color:${txtColor};font-weight:${checked?'700':'600'}">${esc(item)}</span>
+    </label>`;
+  });
+  html += `</div></div>`;
+  return html;
+}
+
+// ── filter toggle functions ───────────────────────────────────────
+function toggleAlertResp(r){
+  if(r==='all'){ ALERT_RESP = new Set(); }
+  else { if(ALERT_RESP.has(r)) ALERT_RESP.delete(r); else ALERT_RESP.add(r); }
+  render();
+}
+
+function toggleDashResp(r){
+  if(r==='all'){ DASH_RESP = new Set(); }
+  else { if(DASH_RESP.has(r)) DASH_RESP.delete(r); else DASH_RESP.add(r); }
+  render();
+}
+
+function highlightText(text, search){
+  if(!search) return esc(text);
+  const idx = text.toLowerCase().indexOf(search.toLowerCase());
+  if(idx === -1) return esc(text);
+  const before = esc(text.slice(0, idx));
+  const match  = esc(text.slice(idx, idx + search.length));
+  const after  = esc(text.slice(idx + search.length));
+  return before + `<mark style="background:#fff176;color:#1c1e21;border-radius:2px;padding:0 1px">${match}</mark>` + after;
+}
+
+let _searchTimer = null;
+function setTipo(t){ FL_TIPO = t; render(); }
+
+function setSearch(val){
+  FL_SEARCH = val.toLowerCase().trim();
+  clearTimeout(_searchTimer);
+  _searchTimer = setTimeout(()=>{
+    const el = document.getElementById('search-input');
+    const pos = el ? el.selectionStart : null;
+    render();
+    // restore focus and cursor after re-render
+    const el2 = document.getElementById('search-input');
+    if(el2){
+      el2.focus();
+      if(pos !== null) try{ el2.setSelectionRange(pos, pos); }catch(e){}
+    }
+  }, 300);
+}
+function clearSearch(){
+  FL_SEARCH = '';
+  clearTimeout(_searchTimer);
+  render();
+  setTimeout(()=>{ const el=document.getElementById('search-input'); if(el){ el.value=''; el.focus(); } }, 50);
+}
+
+function toggleListStatus(s){
+  if(s==='all'){ FL_STATUS = FL_STATUS.size===ALL_STATUSES.length ? new Set() : new Set(ALL_STATUSES); }
+  else { if(FL_STATUS.has(s)) FL_STATUS.delete(s); else FL_STATUS.add(s); }
+  render();
+}
+function toggleListResp(r){
+  if(r==='all'){ FL_RESP = new Set(); }
+  else { if(FL_RESP.has(r)) FL_RESP.delete(r); else FL_RESP.add(r); }
+  render();
+}
+function toggleRespStatus(s){
+  if(s==='all'){ FR_STATUS = FR_STATUS.size===ALL_STATUSES.length ? new Set() : new Set(ALL_STATUSES); }
+  else { if(FR_STATUS.has(s)) FR_STATUS.delete(s); else FR_STATUS.add(s); }
+  render();
+}
+function toggleRespName(r){
+  if(r==='all'){ FR_RESP = new Set(); }
+  else { if(FR_RESP.has(r)) FR_RESP.delete(r); else FR_RESP.add(r); }
+  render();
+}
+
+// ── edit / add ────────────────────────────────────────────────────
+function startEdit(id){
+  if(EDIT_ID===id){ EDIT_ID=null; render(); return; }
+  EDIT_ID=id; EDIT_DRAFT={...DATA.find(d=>d.id===id)}; ADD_CTX=null; render();
+  setTimeout(()=>{ const el=document.querySelector(`#ep-${id} input`); if(el) el.focus(); },50);
+}
+function saveEdit(id){
+  const fim=document.getElementById('ep-fim-'+id)?.value||'';
+  const resp=document.getElementById('ep-resp-'+id)?.value||'';
+  const notas=document.getElementById('ep-notas-'+id)?.value||'';
+  const status=document.getElementById('ep-status-'+id)?.value||'';
+  const pct=parseFloat(document.getElementById('ep-pct-'+id)?.value||0)/100;
+  const old=DATA.find(d=>d.id===id);
+  if(old){
+    const changes=[];
+    const newFim=toSerial(fim);
+    if(old.status!==status) changes.push({campo:'Status', de:old.status||'—', para:status||'—'});
+    if(Math.round((old.pct||0)*100)!==Math.round(pct*100)) changes.push({campo:'% Concluída', de:Math.round((old.pct||0)*100)+'%', para:Math.round(pct*100)+'%'});
+    if((old.fim||null)!==(newFim||null)){
+      const dOld=xlDate(old.fim); const dNew=xlDate(newFim);
+      changes.push({campo:'Prazo', de:dOld?dOld.toLocaleDateString('pt-BR'):'—', para:dNew?dNew.toLocaleDateString('pt-BR'):'—'});
+    }
+    if((old.resp||'')!==(resp||'')) changes.push({campo:'Responsável', de:old.resp||'—', para:resp||'—'});
+    if((old.notas||'')!==(notas||'')) changes.push({campo:'Notas', de:old.notas||'—', para:notas||'—'});
+    if(changes.length) logChange('ALTERAÇÃO', old, changes);
+  }
+  DATA=DATA.map(d=>d.id!==id?d:{...d,status,pct,fim:toSerial(fim),resp,notas});
+  EDIT_ID=null; save(); toast('Salvo!'); render();
+}
+function cancelEdit(){ EDIT_ID=null; render(); }
+function updatePctLabel(id,val){ const el=document.getElementById('pct-lbl-'+id); if(el) el.textContent=val; }
+
+function openAdd(type,prefix){
+  if(ADD_CTX&&ADD_CTX.type===type&&ADD_CTX.prefix===prefix){ ADD_CTX=null; render(); return; }
+  ADD_CTX={type,prefix}; EDIT_ID=null; render();
+  setTimeout(()=>{ const el=document.getElementById(`add-nome-${type}-${prefix}`); if(el) el.focus(); },50);
+}
+function cancelAdd(){ ADD_CTX=null; render(); }
+function confirmAdd(type,prefix){
+  const nome=(document.getElementById(`add-nome-${type}-${prefix}`)?.value||'').trim();
+  if(!nome){ toast('Informe o nome','err'); return; }
+  const num=(document.getElementById(`add-num-${type}-${prefix}`)?.value||'').trim();
+  const status=document.getElementById(`add-status-${type}-${prefix}`)?.value||'Não iniciada';
+  const fim=document.getElementById(`add-fim-${type}-${prefix}`)?.value||'';
+  const resp=document.getElementById(`add-resp-${type}-${prefix}`)?.value||'';
+  const tipo_sel=document.getElementById(`add-tipo-${type}-${prefix}`)?.value||'governanca';
+  const newItem={id:Date.now(),num,nome,status,pct:0,ini:null,fim:toSerial(fim),resp,notas:'',tipo:tipo_sel};
+  DATA=[...DATA,newItem];
+  logChange('INCLUSÃO', newItem, [{campo:'Status', de:'—', para:newItem.status},{campo:'Responsável', de:'—', para:newItem.resp||'—'}]);
+  if(isSubproject(num)) EXPANDED['p_'+getProject(num)]=true;
+  if(isAction(num)){ EXPANDED['p_'+getProject(num)]=true; EXPANDED['s_'+getSubproject(num)]=true; }
+  ADD_CTX=null; save(); toast(`"${nome}" adicionado!`); render();
+}
+function toggle(key){ EXPANDED[key]=!EXPANDED[key]; render(); }
+function setView(v){ VIEW=v; render(); }
+
+// ── edit panel html ───────────────────────────────────────────────
+function editPanelHtml(item,dark,indent){
+  const fim=item.fim?xlDate(item.fim).toISOString().slice(0,10):'';
+  const pct=Math.round((item.pct||0)*100);
+  const cls=dark?'edit-panel edit-panel-dark':'edit-panel';
+  const statOpts=ALL_STATUSES.map(s=>`<option${s===item.status?' selected':''}>${esc(s)}</option>`).join('');
+  return `<div class="${cls}" id="ep-${item.id}" style="padding-left:${indent}px">
+    <div><label>Status</label><select id="ep-status-${item.id}">${statOpts}</select></div>
+    <div><label>% Concluída — <span id="pct-lbl-${item.id}">${pct}</span>%</label>
+      <input type="range" id="ep-pct-${item.id}" min="0" max="100" value="${pct}" oninput="updatePctLabel(${item.id},this.value)"></div>
+    <div><label>Prazo</label><input type="date" id="ep-fim-${item.id}" value="${fim}"></div>
+    <div><label>👤 Responsável</label><input type="text" id="ep-resp-${item.id}" value="${esc(item.resp||'')}" placeholder="Nome"></div>
+    <div style="display:flex;gap:6px"><button class="save-btn" onclick="saveEdit(${item.id})">✓</button><button class="cancel-btn" onclick="cancelEdit()">✕</button></div>
+    <div class="edit-full"><label>Notas</label><textarea id="ep-notas-${item.id}" rows="2">${esc(item.notas||'')}</textarea></div>
+  </div>`;
+}
+
+function addFormHtml(label,sugNum,prefix,type,dark,indent){
+  const cls=dark?'add-form add-form-dark':'add-form';
+  const statOpts=ALL_STATUSES.map(s=>`<option>${esc(s)}</option>`).join('');
+  return `<div class="${cls}" style="padding-left:${indent}px">
+    <div><label>Nº hierárquico</label><input type="text" id="add-num-${type}-${prefix}" value="${esc(sugNum)}"></div>
+    <div><label>Nome *</label><input type="text" id="add-nome-${type}-${prefix}" placeholder="Nome do item…"></div>
+    <div><label>Status</label><select id="add-status-${type}-${prefix}">${statOpts}</select></div>
+    <div><label>Prazo</label><input type="date" id="add-fim-${type}-${prefix}"></div>
+    <div><label>👤 Responsável</label><input type="text" id="add-resp-${type}-${prefix}" placeholder="Nome"></div>
+    ${type==='projeto'?`<div><label>Tipo</label><select id="add-tipo-${type}-${prefix}" style="width:100%;padding:6px 8px;border:1px solid #dadce0;border-radius:6px;font-size:12px"><option value="rotina">Rotina</option><option value="governanca">Governança</option></select></div>`:''}
+    <div class="add-form-btns">
+      <button class="add-confirm" onclick="confirmAdd('${type}','${prefix}')">✓ Adicionar ${esc(label)}</button>
+      <button class="cancel-btn" onclick="cancelAdd()">Cancelar</button>
+    </div>
+  </div>`;
+}
+
+// ── VIEWS ─────────────────────────────────────────────────────────
+function renderDashboard(){
+  const total=DATA.length, done=DATA.filter(d=>d.status==='Concluída').length;
+  const inprog=DATA.filter(d=>d.status==='Em andamento').length;
+  const late=DATA.filter(d=>d.status==='Atrasada').length;
+  const notst=DATA.filter(d=>d.status==='Não iniciada').length;
+  const canceled=DATA.filter(d=>d.status==='Cancelada').length;
+  const pctG=total?Math.round(done/total*100):0;
+  const projects=DATA.filter(d=>isProject(d.num));
+
+  // no resp filter on dashboard
+  const dashRespOk = true;
+
+  // Overall pct by projects only (project-level pct average)
+  const projPcts = projects.map(p => p.pct||0);
+  const avgProjPct = projPcts.length ? Math.round(projPcts.reduce((a,b)=>a+b,0)/projPcts.length*100) : 0;
+
+  let html = `
+  <!-- KPIs -->
+  <div class="kpi-grid" style="grid-template-columns:repeat(6,1fr)">
+    <div class="kpi" style="background:#f1f3f4"><div class="kpi-val" style="color:#5f6368">${total}</div><div class="kpi-lbl" style="color:#5f6368">Total de itens</div></div>
+    <div class="kpi" style="background:#e6f4ea"><div class="kpi-val" style="color:#1a7a34">${done}</div><div class="kpi-lbl" style="color:#1a7a34">Concluídas</div></div>
+    <div class="kpi" style="background:#e8f0fe"><div class="kpi-val" style="color:#1a56cc">${inprog}</div><div class="kpi-lbl" style="color:#1a56cc">Em andamento</div></div>
+    <div class="kpi" style="background:#fce8e6"><div class="kpi-val" style="color:#c5221f">${late}</div><div class="kpi-lbl" style="color:#c5221f">Atrasadas</div></div>
+    <div class="kpi" style="background:#fff8e1"><div class="kpi-val" style="color:#b06000">${notst}</div><div class="kpi-lbl" style="color:#b06000">Não iniciadas</div></div>
+    <div class="kpi" style="background:#f3e8fd"><div class="kpi-val" style="color:#7b1fa2">${canceled}</div><div class="kpi-lbl" style="color:#7b1fa2">Canceladas</div></div>
+  </div>
+
+  <!-- OVERALL PROGRESS HERO -->
+  ${(()=>{
+    const govProjs = projects.filter(p=>!CANCELED_PROJECTS.has(String(p.num))&&(p.tipo||'governanca')==='governanca');
+    const rotProjs = projects.filter(p=>!CANCELED_PROJECTS.has(String(p.num))&&p.tipo==='rotina');
+    const govPct = govProjs.length ? Math.round(govProjs.reduce((a,p)=>a+(p.pct||0),0)/govProjs.length*100) : 0;
+    const rotPct = rotProjs.length ? Math.round(rotProjs.reduce((a,p)=>a+(p.pct||0),0)/rotProjs.length*100) : 0;
+    return `<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:18px">
+      <!-- GERAL -->
+      <div style="background:linear-gradient(135deg,#1a3a5c,#1a56cc);border-radius:12px;padding:14px 18px;color:#fff;display:flex;align-items:center;gap:14px">
+        <div style="flex:1">
+          <div style="font-size:10px;font-weight:700;opacity:.75;margin-bottom:6px;text-transform:uppercase;letter-spacing:.5px">⚡ Progresso Geral</div>
+          <div style="font-size:11px;opacity:.6;margin-bottom:8px">${projects.length} projetos · ${total} itens</div>
+          <div style="height:7px;background:rgba(255,255,255,.2);border-radius:4px;overflow:hidden">
+            <div style="width:${avgProjPct}%;height:100%;background:linear-gradient(90deg,#34a853,#00e676);border-radius:4px"></div>
+          </div>
+        </div>
+        <div style="font-size:28px;font-weight:900;flex-shrink:0">${avgProjPct}%</div>
+      </div>
+      <!-- GOVERNANÇA -->
+      <div style="background:linear-gradient(135deg,#1a3a5c,#1e4470);border-radius:12px;padding:14px 18px;color:#fff;display:flex;align-items:center;gap:14px">
+        <div style="flex:1">
+          <div style="font-size:10px;font-weight:700;opacity:.75;margin-bottom:6px;text-transform:uppercase;letter-spacing:.5px">🔵 Governança</div>
+          <div style="font-size:11px;opacity:.6;margin-bottom:8px">${govProjs.length} projetos</div>
+          <div style="height:7px;background:rgba(255,255,255,.2);border-radius:4px;overflow:hidden">
+            <div style="width:${govPct}%;height:100%;background:linear-gradient(90deg,#4285f4,#8ab4f8);border-radius:4px"></div>
+          </div>
+        </div>
+        <div style="font-size:28px;font-weight:900;flex-shrink:0">${govPct}%</div>
+      </div>
+      <!-- ROTINA -->
+      <div style="background:linear-gradient(135deg,#1a6644,#1e7a50);border-radius:12px;padding:14px 18px;color:#fff;display:flex;align-items:center;gap:14px">
+        <div style="flex:1">
+          <div style="font-size:10px;font-weight:700;opacity:.75;margin-bottom:6px;text-transform:uppercase;letter-spacing:.5px">🟢 Rotina</div>
+          <div style="font-size:11px;opacity:.6;margin-bottom:8px">${rotProjs.length} projetos</div>
+          <div style="height:7px;background:rgba(255,255,255,.2);border-radius:4px;overflow:hidden">
+            <div style="width:${rotPct}%;height:100%;background:linear-gradient(90deg,#34a853,#00e676);border-radius:4px"></div>
+          </div>
+        </div>
+        <div style="font-size:28px;font-weight:900;flex-shrink:0">${rotPct}%</div>
+      </div>
+    </div>`;
+  })()}
+
+  <!-- PROJECT LIST -->
+  <div class="card"><div class="card-title">Projetos Principais</div>`;
+
+  projects.filter(p=>!CANCELED_PROJECTS.has(p.num)).forEach(p=>{
+    const kids=DATA.filter(d=>getProject(d.num)===p.num);
+    // apply resp filter
+    const kidsFiltered = dashRespOk ? kids : kids.filter(k=>k.resp&&DASH_RESP.has(k.resp.trim()));
+    if(!dashRespOk && !kidsFiltered.length && !(p.resp && DASH_RESP.has((p.resp||'').trim()))) return;
+
+    const kd=kids.filter(d=>d.status==='Concluída').length;
+    const kp=kids.length?Math.round(kd/kids.length*100):0;
+    const hasAlert=kids.some(d=>d.status==='Atrasada');
+    const col=hasAlert?'#ea4335':kp===100?'#34a853':'#4285f4';
+
+    // mini status breakdown
+    const statCounts={};
+    kids.forEach(k=>{ statCounts[k.status]=(statCounts[k.status]||0)+1; });
+    const statPills=[['Atrasada','#fce8e6','#c5221f'],['Em andamento','#e8f0fe','#1a56cc'],['Não iniciada','#f1f3f4','#5f6368'],['Standby','#fff8e1','#b06000'],['Concluída','#e6f4ea','#1a7a34'],['Cancelada','#f3e8fd','#7b1fa2']]
+      .filter(([st])=>statCounts[st])
+      .map(([st,bg,tx])=>`<span style="background:${bg};color:${tx};border-radius:10px;padding:2px 10px;font-size:10px;font-weight:700;display:inline-flex;align-items:center;gap:4px">${esc(st)}: ${statCounts[st]}</span>`)
+      .join('');
+
+    html+=`<div style="margin-bottom:18px;padding-bottom:18px;border-bottom:1px solid #f1f3f4">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px">
+        <div>
+          <span style="font-size:10px;background:#e8f0fe;color:#1a56cc;padding:1px 7px;border-radius:6px;font-weight:700;margin-right:6px">${esc(p.num)}</span>
+          <span style="font-size:13px;font-weight:800">${hasAlert?'<span style="color:#c5221f;margin-right:4px">⚠</span>':''}${esc(p.nome)} ${tipoTag(p.tipo||'governanca')}</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px">
+          ${badge(p.status)}
+          <span style="font-size:14px;font-weight:900;color:${col}">${kp}%</span>
+        </div>
+      </div>
+      <div style="height:8px;background:#f1f3f4;border-radius:4px;overflow:hidden;margin-bottom:8px">
+        <div style="width:${kp}%;height:100%;background:${col};border-radius:4px;transition:width .4s"></div>
+      </div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center">
+        ${statPills}
+        <span style="font-size:11px;color:#9aa0a6;margin-left:auto">${kd}/${kids.length} itens concluídos</span>
+      </div>
+    </div>`;
+  });
+
+  html+=`</div>`;
+  return html;
+}
+
+function renderAlerts(){
+  const allAlerts=DATA.filter(d=>{
+    if(d.status==='Concluída'||d.status==='Cancelada') return false;
+    if(d.status==='Atrasada') return true;
+    const dl=daysLeft(xlDate(d.fim));
+    return dl!==null&&dl<=14;
+  });
+  document.getElementById('nav-alerts').textContent=`🔔 Alertas${allAlerts.length?` (${allAlerts.length})`:''}`;
+
+  // use ALL resp names from entire dataset so filter always shows
+  const allNames = allRespNames();
+  const nameBox = allNames.length ? filterBox('Filtrar por responsável', allNames, ALERT_RESP,
+    "toggleAlertResp('all')", r=>`toggleAlertResp('${r.replace(/'/g,"\'")}')`, 'ar') : '';
+
+  // apply filter: if filter active, show only matching; if no resp assigned show item when filter is 'all'
+  const alerts = ALERT_RESP.size===0 ? allAlerts : allAlerts.filter(a=>{
+    const r=(a.resp||'').trim();
+    return r ? ALERT_RESP.has(r) : false;
+  });
+
+  let html=`<div style="font-weight:800;font-size:16px;margin-bottom:14px">🔔 Alertas de Prazo</div>
+  ${allNames.length?`<div style="margin-bottom:14px">${nameBox}</div>`:''}`;
+
+  if(!alerts.length){
+    html+=`<div style="background:#e6f4ea;border-radius:12px;padding:28px;text-align:center;color:#1a7a34;font-weight:700">✅ Nenhum alerta${ALERT_RESP.size?` para o(s) responsável(eis) selecionado(s)`:''}!</div>`;
+    return html;
+  }
+  alerts.forEach(a=>{
+    const d=xlDate(a.fim); const dl=daysLeft(d);
+    const bc=(a.status==='Atrasada'||(dl!==null&&dl<=0))?'#ea4335':'#fbbc04';
+    html+=`<div class="alert-card" style="border:1.5px solid ${bc}">
+      <div>
+        <div style="font-weight:700;font-size:13px"><span style="font-size:10px;background:#f1f3f4;padding:1px 6px;border-radius:6px;margin-right:6px;color:#5f6368">${esc(a.num)}</span>${esc(a.nome)}</div>
+        <div style="font-size:11px;color:#5f6368;margin-top:3px;display:flex;gap:8px;align-items:center">Prazo: ${fmt(d)} · ${badge(a.status)} ${avChip(a.resp)}</div>
+      </div>${alertBadge(a)}</div>`;
+  });
+  return html;
+}
+
+function renderList(){
+  const names = allRespNames();
+  // apply filters
+  const statusActive = FL_STATUS.size === 0 || FL_STATUS.size === ALL_STATUSES.length ? new Set(ALL_STATUSES) : FL_STATUS;
+  const respActive   = FL_RESP.size === 0;
+
+  // filter at item level - show project if ANY child matches
+  function itemVisible(d){
+    if(!statusActive.has(d.status)) return false;
+    if(!respActive && !FL_RESP.has(d.resp||'')) return false;
+    if(FL_SEARCH){
+      const haystack = (d.num+' '+d.nome+' '+(d.resp||'')+' '+(d.notas||'')).toLowerCase();
+      if(!haystack.includes(FL_SEARCH)) return false;
+    }
+    if(FL_TIPO !== 'all'){
+      const projTipo = (DATA.find(x=>x.num===getProject(d.num))?.tipo)||'governanca';
+      if(projTipo !== FL_TIPO) return false;
+    }
+    if(FL_TIPO !== 'all'){
+      const projTipo = (DATA.find(x=>x.num===getProject(d.num))?.tipo)||'governanca';
+      if(projTipo !== FL_TIPO) return false;
+    }
+    return true;
+  }
+  // project is visible if it matches OR any child matches
+  function projVisible(pnum){
+    const proj = DATA.find(d=>d.num===pnum);
+    if(!proj) return false;
+    if(FL_SEARCH){
+      const allKids = DATA.filter(d=>getProject(d.num)===pnum);
+      return itemVisible(proj) || allKids.some(d=>itemVisible(d));
+    }
+    const allKids = DATA.filter(d=>getProject(d.num)===pnum);
+    return allKids.some(d=>itemVisible(d)) || itemVisible(proj);
+  }
+
+  const projects=DATA.filter(d=>isProject(d.num));
+  const projNums=[...new Set(DATA.filter(d=>isProject(d.num)).map(d=>d.num))].sort((a,b)=>+a-+b);
+
+  // filter boxes
+  const statusBox = filterBox(
+    'Status',
+    ALL_STATUSES,
+    FL_STATUS.size === ALL_STATUSES.length ? new Set() : FL_STATUS,
+    "toggleListStatus('all')",
+    s => `toggleListStatus('${s}')`,
+    'fl'
+  );
+  const respBox = names.length ? filterBox(
+    'Responsável',
+    names,
+    FL_RESP,
+    "toggleListResp('all')",
+    r => `toggleListResp('${r.replace(/'/g,"\\'")}')`,
+    'flr'
+  ) : '';
+
+  let html=`<div class="filters-row">${statusBox}${respBox}</div>
+  <div style="display:flex;gap:8px;margin-bottom:12px;align-items:center;flex-wrap:wrap">
+    <div style="flex:1;min-width:220px;position:relative">
+      <span style="position:absolute;left:10px;top:50%;transform:translateY(-50%);color:#9aa0a6;font-size:14px;pointer-events:none">🔍</span>
+      <input id="search-input" type="text" value="${FL_SEARCH}"
+        oninput="setSearch(this.value)"
+        placeholder="Buscar por palavra-chave…"
+        style="width:100%;padding:8px 36px 8px 32px;border:1.5px solid ${FL_SEARCH?'#4285f4':'#dadce0'};border-radius:8px;font-size:13px;outline:none;box-sizing:border-box">
+      ${FL_SEARCH?`<button onclick="clearSearch()" style="position:absolute;right:8px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:#9aa0a6;font-size:14px;padding:0">✕</button>`:''}
+    </div>
+    <button onclick="exportToExcel()" style="background:#1a7a34;color:#fff;border:none;border-radius:7px;padding:8px 16px;font-size:12px;font-weight:800;cursor:pointer">⬇ Excel</button>
+    <button class="new-proj-btn" style="margin:0" onclick="openAdd('projeto','_root')">+ Novo Projeto</button>
+  </div>
+  ${FL_SEARCH ? `<div style="font-size:12px;color:#1a56cc;font-weight:600;margin-bottom:10px;padding:6px 12px;background:#e8f0fe;border-radius:8px;display:inline-block">🔍 Buscando: "<strong>${FL_SEARCH}</strong>"</div>` : ''}
+  <div style="display:flex;gap:6px;margin-bottom:12px;align-items:center">
+    <span style="font-size:12px;font-weight:700;color:#5f6368">Tipo:</span>
+  <button onclick="setTipo('all')" style="padding:4px 14px;border:none;border-radius:20px;font-size:11px;font-weight:700;cursor:pointer;background:${FL_TIPO==='all'?'#1a3a5c':'#f1f3f4'};color:${FL_TIPO==='all'?'#fff':'#5f6368'}">Todos</button>
+    <button onclick="setTipo('governanca')" style="padding:4px 14px;border:none;border-radius:20px;font-size:11px;font-weight:700;cursor:pointer;background:${FL_TIPO==='governanca'?'#1a3a5c':'#f1f3f4'};color:${FL_TIPO==='governanca'?'#fff':'#5f6368'}">GOVERNANÇA</button>
+    <button onclick="setTipo('rotina')" style="padding:4px 14px;border:none;border-radius:20px;font-size:11px;font-weight:700;cursor:pointer;background:${FL_TIPO==='rotina'?'#1a6644':'#f1f3f4'};color:${FL_TIPO==='rotina'?'#fff':'#5f6368'}">ROTINA</button>
+  </div>`;
+
+  if(ADD_CTX&&ADD_CTX.prefix==='_root') html+=addFormHtml('Projeto',nextProjectNum(DATA),'_root','projeto',false,14);
+
+  // auto-expand when searching
+  if(FL_SEARCH){
+    projNums.forEach(pnum=>{
+      if(CANCELED_PROJECTS.has(String(pnum))) return;
+      const allKids = DATA.filter(d=>getProject(d.num)===pnum);
+      if(allKids.some(d=>itemVisible(d))){
+        EXPANDED['p_'+pnum] = true;
+        DATA.filter(d=>isSubproject(d.num)&&getProject(d.num)===pnum).forEach(s=>{
+          const acts = DATA.filter(a=>isAction(a.num)&&getSubproject(a.num)===s.num);
+          if(acts.some(a=>itemVisible(a))) EXPANDED['s_'+s.num] = true;
+        });
+      }
+    });
+  }
+
+  let anyVisible=false;
+  projNums.forEach(pnum=>{
+    if(CANCELED_PROJECTS.has(String(pnum))) return; // hidden — shown in Cancelados tab
+    if(!projVisible(pnum)) return;
+    const proj=DATA.find(d=>d.num===pnum); if(!proj) return;
+    // check if project itself or any child passes filter
+    const allKids=DATA.filter(d=>getProject(d.num)===pnum);
+    const hasVisible=allKids.some(d=>itemVisible(d))||itemVisible(proj);
+    if(!hasVisible) return;
+    anyVisible=true;
+
+    const subNums=[...new Set(DATA.filter(d=>isSubproject(d.num)&&getProject(d.num)===pnum).map(d=>d.num))].sort();
+    const open=EXPANDED['p_'+pnum]===true;
+    const br=open?'12px 12px 0 0':'12px';
+
+    html+=`<div class="proj-wrap">
+      <div style="background:#1a3a5c;border-radius:${br};overflow:hidden">
+        <div id="item-${proj.id}" class="proj-row" style="background:${(TIPO_CFG[proj.tipo||'governanca']||TIPO_CFG.governanca).barBg}" onclick="toggle('p_${pnum}')" onmouseover="this.style.background='${(TIPO_CFG[proj.tipo||'governanca']||TIPO_CFG.governanca).barHover}'" onmouseout="this.style.background='${(TIPO_CFG[proj.tipo||'governanca']||TIPO_CFG.governanca).barBg}'">
+          <button class="toggle-btn" style="color:#fff">${open?'▾':'▸'}</button>
+          <span class="proj-num">${esc(proj.num)}</span>
+          ${tipoTag(proj.tipo||'governanca')}
+          <span class="proj-nome">${esc(proj.nome)}</span>
+          ${progBar(proj.pct)}
+          ${badge(proj.status)}
+          <span class="proj-date">${fmt(xlDate(proj.fim))}</span>
+          ${alertBadge(proj)}
+          <button class="add-pill" onclick="event.stopPropagation();openAdd('subprojeto','${pnum}')">+ Subprojeto</button>
+          <button class="add-pill" onclick="event.stopPropagation();openAdd('acao_direta','${pnum}')">+ Ação</button>
+          <button class="edit-btn" onclick="event.stopPropagation();startEdit(${proj.id})">✏</button>
+          <button onclick="event.stopPropagation();moveToCancel('${pnum}')" style="background:rgba(255,255,255,.1);border:none;border-radius:6px;padding:3px 9px;color:#f4a9a9;font-size:10px;font-weight:700;cursor:pointer" title="Mover para Cancelados">🚫</button>
+        </div>
+        ${EDIT_ID===proj.id?editPanelHtml(EDIT_DRAFT,true,14):''}
+        ${ADD_CTX&&ADD_CTX.type==='subprojeto'&&ADD_CTX.prefix===pnum?addFormHtml('Subprojeto',nextNum(DATA,pnum),pnum,'subprojeto',true,40):''}
+        ${ADD_CTX&&ADD_CTX.type==='acao_direta'&&ADD_CTX.prefix===pnum?addFormHtml('Ação',nextNum(DATA,pnum),pnum,'acao_direta',true,40):''}
+      </div>`;
+
+    if(open){
+      html+=`<div class="tree-container">`;
+      subNums.forEach(snum=>{
+        const sub=DATA.find(d=>d.num===snum); if(!sub) return;
+        const acts=DATA.filter(d=>isAction(d.num)&&getSubproject(d.num)===snum);
+        const subVisible=itemVisible(sub)||acts.some(a=>itemVisible(a));
+        if(!subVisible) return;
+        const subOpen=EXPANDED['s_'+snum]===true;
+        html+=`<div>
+          <div id="item-${sub.id}" class="sub-row" onclick="toggle('s_${snum}')">
+            <div style="width:18px"></div>
+            <button class="toggle-btn" style="color:#5f6368;min-width:16px">${subOpen?'▾':'▸'}</button>
+            <span class="sub-num">${esc(sub.num)}</span>
+            <span class="sub-nome">${highlightText(sub.nome,FL_SEARCH)}</span>
+            ${avChip(sub.resp)}${progBar(sub.pct)}${badge(sub.status)}
+            <span class="act-date">${fmt(xlDate(sub.fim))}</span>${alertBadge(sub)}
+            <button class="add-pill-light" onclick="event.stopPropagation();openAdd('acao','${snum}')">+ Ação</button>
+            <button class="edit-btn-light" onclick="event.stopPropagation();startEdit(${sub.id})">✏</button>
+                <button onclick="event.stopPropagation();deleteItem(${sub.id})" style="background:#fce8e6;border:none;border-radius:5px;padding:2px 7px;color:#c5221f;font-size:10px;font-weight:700;cursor:pointer" title="Excluir subprojeto">🗑</button>
+          </div>
+          ${EDIT_ID===sub.id?editPanelHtml(EDIT_DRAFT,false,46):''}
+          ${ADD_CTX&&ADD_CTX.type==='acao'&&ADD_CTX.prefix===snum?addFormHtml('Ação',nextNum(DATA,snum),snum,'acao',false,60):''}`;
+        if(subOpen){
+          acts.forEach(a=>{
+            if(!itemVisible(a)) return;
+            html+=`<div>
+              <div class="act-row" id="item-${a.id}" style="padding:7px 14px 7px 60px">
+                <span class="act-num">${esc(a.num)}</span>
+                <span class="act-nome">${highlightText(a.nome,FL_SEARCH)}</span>
+                ${avChip(a.resp)}${progBar(a.pct)}${badge(a.status)}
+                <span class="act-date">${fmt(xlDate(a.fim))}</span>${alertBadge(a)}
+                <button class="edit-btn-light" onclick="startEdit(${a.id})">✏</button>
+                <button onclick="deleteItem(${a.id})" style="background:#fce8e6;border:none;border-radius:5px;padding:2px 7px;color:#c5221f;font-size:10px;font-weight:700;cursor:pointer" title="Excluir">🗑</button>
+              </div>
+              ${EDIT_ID===a.id?editPanelHtml(EDIT_DRAFT,false,60):''}
+            </div>`;
+          });
+        }
+        html+=`</div>`;
+      });
+      // direct actions
+      const directActs=DATA.filter(d=>isAction(d.num)&&getProject(d.num)===pnum&&d.num.split('.').length===3&&!subNums.includes(getSubproject(d.num)));
+      directActs.forEach(a=>{
+        if(!itemVisible(a)) return;
+        html+=`<div>
+          <div class="act-row" id="item-${a.id}" style="padding:7px 14px 7px 46px">
+            <span class="act-num">${esc(a.num)}</span>
+            <span class="act-nome">${highlightText(a.nome,FL_SEARCH)}</span>
+            ${avChip(a.resp)}${progBar(a.pct)}${badge(a.status)}
+            <span class="act-date">${fmt(xlDate(a.fim))}</span>${alertBadge(a)}
+            <button class="edit-btn-light" onclick="startEdit(${a.id})">✏</button>
+            <button onclick="deleteItem(${a.id})" style="background:#fce8e6;border:none;border-radius:5px;padding:2px 7px;color:#c5221f;font-size:10px;font-weight:700;cursor:pointer" title="Excluir">🗑</button>
+          </div>
+          ${EDIT_ID===a.id?editPanelHtml(EDIT_DRAFT,false,46):''}
+        </div>`;
+      });
+      html+=`</div>`;
+    }
+    html+=`</div>`;
+  });
+
+  if(!anyVisible) html+=`<div class="empty">Nenhum item encontrado com esses filtros.</div>`;
+  return html;
+}
+
+function renderResp(){
+  const withResp=DATA.filter(d=>d.resp&&d.resp.trim());
+  const noResp=DATA.filter(d=>(!d.resp||!d.resp.trim())&&d.status!=='Concluída'&&d.status!=='Cancelada');
+  const map={};
+  withResp.forEach(d=>{ const k=d.resp.trim(); if(!map[k]) map[k]=[]; map[k].push(d); });
+  const names=Object.keys(map).sort();
+
+  const statusBox = filterBox('Status', ALL_STATUSES, FR_STATUS.size===ALL_STATUSES.length?new Set():FR_STATUS,
+    "toggleRespStatus('all')", s=>`toggleRespStatus('${s}')`, 'fr');
+  const nameBox = names.length ? filterBox('Responsável', names, FR_RESP,
+    "toggleRespName('all')", r=>`toggleRespName('${r.replace(/'/g,"\\'")}')`, 'frn') : '';
+
+  let html=`<div style="font-weight:800;font-size:16px;margin-bottom:14px">👥 Painel por Responsável</div>
+  <div class="filters-row">${statusBox}${nameBox}</div>`;
+
+  const statOrder=['Atrasada','Em andamento','Não iniciada','Standby','Concluída','Cancelada'];
+  const statusActive = FR_STATUS.size===0||FR_STATUS.size===ALL_STATUSES.length ? new Set(ALL_STATUSES) : FR_STATUS;
+  const nameActive   = FR_RESP.size===0;
+
+  const visibleNames = nameActive ? names : names.filter(n=>FR_RESP.has(n));
+
+  if(!visibleNames.length){
+    html+=`<div class="empty">Nenhum responsável atribuído ainda. Use ✏ em cada item para atribuir.</div>`;
+    return html;
+  }
+
+  // ── CHART ──────────────────────────────────────────────────────
+  const statColors={
+    'Atrasada':'#ea4335','Em andamento':'#4285f4','Não iniciada':'#9aa0a6',
+    'Standby':'#fbbc04','Concluída':'#34a853','Cancelada':'#ab47bc'
+  };
+  const BAR_H = 28;
+  const GAP   = 10;
+  const LABEL_W = 110;
+  const CHART_W = 520;
+  const totalH = visibleNames.length * (BAR_H + GAP) + 30;
+
+  // max items for scale
+  const maxItems = Math.max(...visibleNames.map(n=>map[n].length));
+
+  let bars = '';
+  visibleNames.forEach((name, idx) => {
+    const items = map[name];
+    const total = items.length;
+    const y = idx * (BAR_H + GAP) + 24;
+
+    let x = 0;
+    statOrder.forEach(st => {
+      const cnt = items.filter(i=>i.status===st).length;
+      if(!cnt) return;
+      const w = Math.round((cnt / maxItems) * CHART_W);
+      const col = statColors[st] || '#9aa0a6';
+      const safeKey = name.replace(/[^a-zA-Z0-9]/g,'_');
+      bars += `<rect x="${LABEL_W + x}" y="${y}" width="${w}" height="${BAR_H}" fill="${col}" opacity="${statusActive.has(st)?1:.25}"
+        rx="3" style="cursor:pointer;transition:opacity .2s"
+        onclick="toggleChartDrill('${safeKey}','${st}')"
+        onmouseover="this.style.opacity='0.8'"
+        onmouseout="this.style.opacity='${statusActive.has(st)?1:.25}'">
+        <title>${esc(name)} · ${esc(st)}: ${cnt} itens</title>
+      </rect>`;
+      if(w > 22) {
+        bars += `<text x="${LABEL_W + x + w/2}" y="${y + BAR_H/2 + 4}" text-anchor="middle" fill="white" font-size="11" font-weight="700" pointer-events="none" style="cursor:pointer" onclick="toggleChartDrill('${safeKey}','${st}')">${cnt}</text>`;
+      }
+      x += w;
+    });
+
+    // label
+    const av = avatar(name);
+    bars += `<text x="${LABEL_W - 6}" y="${y + BAR_H/2 + 4}" text-anchor="end" fill="#1c1e21" font-size="12" font-weight="700">${esc(name.split(' ')[0])}</text>`;
+    // total label
+    bars += `<text x="${LABEL_W + x + 6}" y="${y + BAR_H/2 + 4}" fill="#5f6368" font-size="11">${total}</text>`;
+  });
+
+  // legend
+  let legend = '';
+  let lx = LABEL_W;
+  statOrder.forEach(st => {
+    const col = statColors[st];
+    legend += `<rect x="${lx}" y="2" width="12" height="12" fill="${col}" rx="2" opacity="${statusActive.has(st)?1:.3}"/>`;
+    legend += `<text x="${lx+16}" y="12" fill="#5f6368" font-size="11">${esc(st)}</text>`;
+    lx += st.length * 7 + 28;
+  });
+
+  html += `<div class="card" style="overflow-x:auto;margin-bottom:16px">
+    <div class="card-title">Distribuição de itens por responsável</div>
+    <svg width="${LABEL_W + CHART_W + 60}" height="${totalH + 20}" style="display:block">
+      ${legend}
+      ${bars}
+    </svg>
+    <div style="font-size:11px;color:#9aa0a6;margin-top:8px">Clique em uma barra para ver os itens daquele status</div>
+  </div>`;
+
+  // ── DRILL DOWN ─────────────────────────────────────────────────
+  if(window.CHART_DRILL){
+    const {nameKey, status} = window.CHART_DRILL;
+    const drillName = visibleNames.find(n=>n.replace(/[^a-zA-Z0-9]/g,'_')===nameKey);
+    if(drillName && map[drillName]){
+      const drillItems = map[drillName].filter(i=>i.status===status);
+      const c = SC[status]||SC['Não iniciada'];
+      let rows = drillItems.map(item=>`<div class="resp-item">
+        <span style="width:6px;height:6px;border-radius:50%;background:${c.dot};flex-shrink:0;display:inline-block"></span>
+        <span class="resp-item-num">${esc(item.num)}</span>
+        <span class="resp-item-nome" title="${esc(item.nome)}">${esc(item.nome)}</span>
+        ${xlDate(item.fim)?`<span class="resp-item-date">${fmt(xlDate(item.fim))}</span>`:''}
+        ${alertBadge(item)}
+      </div>`).join('');
+
+      html += `<div class="card" style="border:2px solid ${c.dot}">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+          <div>
+            <span style="font-weight:800;font-size:14px">${esc(drillName)}</span>
+            <span class="badge" style="background:${c.bg};color:${c.tx};margin-left:8px"><span class="badge-dot" style="background:${c.dot}"></span>${esc(status)}</span>
+            <span style="font-size:12px;color:#9aa0a6;margin-left:8px">${drillItems.length} itens</span>
+          </div>
+          <button onclick="window.CHART_DRILL=null;render()" style="background:#f1f3f4;border:none;border-radius:6px;padding:4px 10px;cursor:pointer;font-size:12px;font-weight:700">✕ Fechar</button>
+        </div>
+        <div>${rows}</div>
+      </div>`;
+    }
+  }
+
+  // ── CARDS ──────────────────────────────────────────────────────
+  html+=`<div class="resp-grid">`;
+  let anyCard=false;
+  visibleNames.forEach(name=>{
+    const items=map[name];
+    const filtered=items.filter(i=>statusActive.has(i.status));
+    if(!filtered.length) return;
+    anyCard=true;
+    const done=items.filter(i=>i.status==='Concluída').length;
+    const late=items.filter(i=>i.status==='Atrasada').length;
+    const pct=items.length?Math.round(done/items.length*100):0;
+    const av=avatar(name);
+    const col=pct===100?'#34a853':late>0?'#ea4335':'#4285f4';
+    const sorted=[...filtered].sort((a,b)=>statOrder.indexOf(a.status)-statOrder.indexOf(b.status));
+    let pills='';
+    [['Atrasada','#fce8e6','#c5221f'],['Em andamento','#e8f0fe','#1a56cc'],['Não iniciada','#f1f3f4','#5f6368'],['Standby','#fff8e1','#b06000'],['Concluída','#e6f4ea','#1a7a34'],['Cancelada','#f3e8fd','#7b1fa2']].forEach(([st,bg,tx])=>{
+      const cnt=items.filter(i=>i.status===st).length;
+      if(cnt) pills+=`<span class="resp-pill" style="background:${bg};color:${tx};cursor:pointer" onclick="toggleChartDrill('${name.replace(/[^a-zA-Z0-9]/g,'_')}','${st}')">${esc(st)}: ${cnt}</span>`;
+    });
+    let itemRows='';
+    sorted.forEach(item=>{
+      const fim=xlDate(item.fim); const c=SC[item.status]||SC['Não iniciada'];
+      itemRows+=`<div class="resp-item">
+        <span style="width:6px;height:6px;border-radius:50%;background:${c.dot};flex-shrink:0;display:inline-block"></span>
+        <span class="resp-item-num">${esc(item.num)}</span>
+        <span class="resp-item-nome" title="${esc(item.nome)}">${esc(item.nome)}</span>
+        ${fim?`<span class="resp-item-date">${fmt(fim)}</span>`:''}
+        ${alertBadge(item)}
+      </div>`;
+    });
+    html+=`<div class="resp-card">
+      <div class="resp-card-head">
+        <div class="resp-card-info">
+          <div class="resp-av" style="background:${av.color}">${av.initials}</div>
+          <div style="flex:1"><div class="resp-name">${esc(name)}</div>
+          <div class="resp-sub">${filtered.length} de ${items.length} itens · ${done} concluídos${late>0?` · ⚠ ${late} atrasados`:''}</div></div>
+          <div class="resp-pct" style="color:${col}">${pct}%</div>
+        </div>
+        <div style="height:6px;background:#f1f3f4;border-radius:3px;overflow:hidden"><div style="width:${pct}%;height:100%;background:${col};border-radius:3px"></div></div>
+        <div class="resp-pills">${pills}</div>
+      </div>
+      <div class="resp-list">${itemRows}</div>
+    </div>`;
+  });
+  html+=`</div>`;
+
+  if(!anyCard) html+=`<div class="empty" style="margin-top:12px">Nenhum resultado com esses filtros.</div>`;
+
+  if(noResp.length&&nameActive){
+    const noRespFiltered=noResp.filter(d=>statusActive.has(d.status));
+    if(noRespFiltered.length){
+      let rows='';
+      noRespFiltered.forEach(item=>{
+        const c=SC[item.status]||SC['Não iniciada'];
+        rows+=`<div class="resp-item"><span style="width:6px;height:6px;border-radius:50%;background:${c.dot};flex-shrink:0;display:inline-block"></span><span class="resp-item-num">${esc(item.num)}</span><span class="resp-item-nome">${esc(item.nome)}</span>${badge(item.status)}</div>`;
+      });
+      html+=`<div style="margin-top:16px;background:#fff;border-radius:14px;border:1px solid #e0e3e8;overflow:hidden">
+        <div style="padding:12px 16px;border-bottom:1px solid #f1f3f4;font-weight:700;font-size:13px;color:#9aa0a6">Sem responsável — ${noRespFiltered.length} itens ativos</div>
+        <div style="max-height:200px;overflow-y:auto">${rows}</div>
+      </div>`;
+    }
+  }
+  return html;
+}
+
+
+function renderCanceled(){
+  const canceledProjs = DATA.filter(d => isProject(d.num) && CANCELED_PROJECTS.has(d.num));
+  const allProjNums = [...new Set(DATA.filter(d=>isProject(d.num)).map(d=>d.num))];
+
+  let html = `<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+    <div style="font-weight:800;font-size:16px">🚫 Projetos Cancelados</div>
+    <div style="font-size:12px;color:#9aa0a6">${canceledProjs.length} projeto(s) nesta aba</div>
+  </div>`;
+
+  if(!canceledProjs.length){
+    html += `<div class="empty">Nenhum projeto cancelado.</div>`;
+    return html;
+  }
+
+  canceledProjs.forEach(proj => {
+    const pnum = proj.num;
+    const subNums = [...new Set(DATA.filter(d=>isSubproject(d.num)&&getProject(d.num)===pnum).map(d=>d.num))].sort();
+    const allKids = DATA.filter(d=>getProject(d.num)===pnum);
+    const done = allKids.filter(d=>d.status==='Concluída').length;
+    const open = EXPANDED['pc_'+pnum] === true;
+    const br = open ? '12px 12px 0 0' : '12px';
+
+    // status breakdown pills
+    const statCounts={};
+    allKids.forEach(k=>{ statCounts[k.status]=(statCounts[k.status]||0)+1; });
+    const statPills=[['Atrasada','#fce8e6','#c5221f'],['Em andamento','#e8f0fe','#1a56cc'],['Não iniciada','#f1f3f4','#5f6368'],['Standby','#fff8e1','#b06000'],['Concluída','#e6f4ea','#1a7a34'],['Cancelada','#f3e8fd','#7b1fa2']]
+      .filter(([st])=>statCounts[st])
+      .map(([st,bg,tx])=>`<span style="background:${bg};color:${tx};border-radius:10px;padding:2px 10px;font-size:10px;font-weight:700;display:inline-flex;align-items:center;gap:4px">${esc(st)}: ${statCounts[st]}</span>`)
+      .join('');
+
+    html += `<div class="proj-wrap">
+      <div style="background:#4a1a4a;border-radius:${br};overflow:hidden">
+        <div class="proj-row" style="background:#4a1a4a" onclick="toggle('pc_${pnum}')">
+          <button class="toggle-btn" style="color:#fff">${open?'▾':'▸'}</button>
+          <span class="proj-num">${esc(proj.num)}</span>
+          <span class="proj-nome">${esc(proj.nome)}</span>
+          ${progBar(proj.pct)}
+          ${badge(proj.status)}
+          <span class="proj-date">${fmt(xlDate(proj.fim))}</span>
+          <button class="edit-btn" onclick="event.stopPropagation();startEdit(${proj.id})">✏</button>
+          <button onclick="event.stopPropagation();restoreProject('${pnum}')" style="background:rgba(255,255,255,.13);border:none;border-radius:6px;padding:3px 9px;color:#fff;font-size:10px;font-weight:700;cursor:pointer" title="Mover de volta para Projetos">↩ Restaurar</button>
+        </div>
+        ${EDIT_ID===proj.id?editPanelHtml(EDIT_DRAFT,true,14):''}
+      </div>`;
+
+    if(open){
+      html += `<div class="tree-container">`;
+      subNums.forEach(snum=>{
+        const sub=DATA.find(d=>d.num===snum); if(!sub) return;
+        const acts=DATA.filter(d=>isAction(d.num)&&getSubproject(d.num)===snum);
+        const subOpen=EXPANDED['pcs_'+snum]===true;
+        html+=`<div>
+          <div class="sub-row" onclick="toggle('pcs_${snum}')">
+            <div style="width:18px"></div>
+            <button class="toggle-btn" style="color:#5f6368;min-width:16px">${subOpen?'▾':'▸'}</button>
+            <span class="sub-num">${esc(sub.num)}</span>
+            <span class="sub-nome">${highlightText(sub.nome,FL_SEARCH)}</span>
+            ${avChip(sub.resp)}${progBar(sub.pct)}${badge(sub.status)}
+            <span class="act-date">${fmt(xlDate(sub.fim))}</span>
+            <button class="edit-btn-light" onclick="event.stopPropagation();startEdit(${sub.id})">✏</button>
+                <button onclick="event.stopPropagation();deleteItem(${sub.id})" style="background:#fce8e6;border:none;border-radius:5px;padding:2px 7px;color:#c5221f;font-size:10px;font-weight:700;cursor:pointer" title="Excluir subprojeto">🗑</button>
+          </div>
+          ${EDIT_ID===sub.id?editPanelHtml(EDIT_DRAFT,false,46):''}`;
+        if(subOpen){
+          acts.forEach(a=>{
+            html+=`<div>
+              <div class="act-row" id="item-${a.id}" style="padding:7px 14px 7px 60px">
+                <span class="act-num">${esc(a.num)}</span>
+                <span class="act-nome">${highlightText(a.nome,FL_SEARCH)}</span>
+                ${avChip(a.resp)}${progBar(a.pct)}${badge(a.status)}
+                <span class="act-date">${fmt(xlDate(a.fim))}</span>
+                <button class="edit-btn-light" onclick="startEdit(${a.id})">✏</button>
+                <button onclick="deleteItem(${a.id})" style="background:#fce8e6;border:none;border-radius:5px;padding:2px 7px;color:#c5221f;font-size:10px;font-weight:700;cursor:pointer" title="Excluir">🗑</button>
+              </div>
+              ${EDIT_ID===a.id?editPanelHtml(EDIT_DRAFT,false,60):''}
+            </div>`;
+          });
+        }
+        html+=`</div>`;
+      });
+
+      // direct actions
+      const directActs=DATA.filter(d=>isAction(d.num)&&getProject(d.num)===pnum&&d.num.split('.').length===3&&!subNums.includes(getSubproject(d.num)));
+      directActs.forEach(a=>{
+        html+=`<div>
+          <div class="act-row" id="item-${a.id}" style="padding:7px 14px 7px 46px">
+            <span class="act-num">${esc(a.num)}</span>
+            <span class="act-nome">${highlightText(a.nome,FL_SEARCH)}</span>
+            ${avChip(a.resp)}${progBar(a.pct)}${badge(a.status)}
+            <span class="act-date">${fmt(xlDate(a.fim))}</span>
+            <button class="edit-btn-light" onclick="startEdit(${a.id})">✏</button>
+            <button onclick="deleteItem(${a.id})" style="background:#fce8e6;border:none;border-radius:5px;padding:2px 7px;color:#c5221f;font-size:10px;font-weight:700;cursor:pointer" title="Excluir">🗑</button>
+          </div>
+          ${EDIT_ID===a.id?editPanelHtml(EDIT_DRAFT,false,46):''}
+        </div>`;
+      });
+      html += `</div>`;
+    }
+
+    // summary bar
+    html += `<div style="background:#f9f0f9;border:1px solid #e8d4e8;border-top:none;border-radius:0 0 12px 12px;padding:8px 14px;display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+      ${statPills}
+      <span style="font-size:11px;color:#9aa0a6;margin-left:auto">${done}/${allKids.length} itens concluídos</span>
+    </div>`;
+
+    html += `</div>`;
+  });
+
+  return html;
+}
+
+function restoreProject(pnum){
+  CANCELED_PROJECTS.delete(pnum);
+  saveToFirebase(); // direct save, no debounce
+  toast(`Projeto ${pnum} restaurado para Projetos!`);
+  render();
+}
+
+function moveToCancel(pnum){
+  CANCELED_PROJECTS.add(String(pnum));
+  console.log('Moving to cancel:', pnum, 'CANCELED now:', [...CANCELED_PROJECTS]);
+  saveToFirebase();
+  toast(`Projeto ${pnum} movido para Cancelados!`);
+  render();
+}
+
+window.CHART_DRILL = null;
+let DASH_G_TIPO = 'all'; // gerencial filter
+window.HIGHLIGHT_ID = null;
+window.HIST_FILTER_TYPE = 'all';
+window.HIST_FILTER_DATE = '';
+
+// ── AUDIT LOG ─────────────────────────────────────────────────────
+let AUDIT_LOG = (()=>{
+  try { const s = localStorage.getItem('paula_audit'); return s ? JSON.parse(s) : []; } catch(e){ return []; }
+})();
+
+function saveAudit(){
+  try{ localStorage.setItem('paula_audit', JSON.stringify(AUDIT_LOG)); }catch(e){}
+  saveToFirebase();
+}
+
+function nowStr(){
+  return new Date().toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'});
+}
+
+function logChange(tipo, item, changes){
+  // Skip logging for 'rotina' projects
+  const projTipo = (DATA.find(x=>x.num===getProject(item.num))?.tipo) || item.tipo || 'governanca';
+  if(projTipo === 'rotina') return;
+
+  // tipo: 'INCLUSÃO' | 'EXCLUSÃO' | 'ALTERAÇÃO'
+  const entry = {
+    id: Date.now(),
+    data: nowStr(),
+    tipo,
+    num: item.num,
+    nome: item.nome,
+    changes // array of {campo, de, para}
+  };
+  AUDIT_LOG.unshift(entry); // newest first
+  if(AUDIT_LOG.length > 500) AUDIT_LOG = AUDIT_LOG.slice(0,500); // keep last 500
+  saveAudit();
+}
+
+function fieldLabel(f){
+  const map = {status:'Status', pct:'% Concluída', fim:'Prazo', resp:'Responsável', notas:'Notas', nome:'Nome', num:'Número'};
+  return map[f] || f;
+}
+function fieldFmt(f, v){
+  if(f==='pct') return Math.round((parseFloat(v)||0)*100)+'%';
+  if(f==='fim'){ const d=xlDate(parseFloat(v)); return d?d.toLocaleDateString('pt-BR'):'—'; }
+  return v||'—';
+}
+let CRONO_RESP = new Set();
+let CRONO_DAYS = 30; // default: next 30 days
+function deleteItem(id){
+  const item = DATA.find(d => d.id === id);
+  if(!item){ toast('Item não encontrado: '+id, 'err'); return; }
+  // use custom confirm to avoid browser blocking
+  const overlay = document.createElement('div');
+  overlay.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.5);z-index:99999;display:flex;align-items:center;justify-content:center';
+  overlay.innerHTML = `<div style="background:#fff;border-radius:14px;padding:28px 32px;max-width:420px;width:90%;box-shadow:0 8px 40px rgba(0,0,0,.25)">
+    <div style="font-weight:800;font-size:15px;margin-bottom:8px;color:#c5221f">🗑 Excluir item?</div>
+    <div style="font-size:13px;color:#3c4043;margin-bottom:20px;line-height:1.5"><strong>${item.num}</strong> — ${item.nome}${isSubproject(item.num)?'<br><span style="color:#c5221f;font-size:12px">⚠ Todas as ações deste subprojeto também serão excluídas.</span>':''}</div>
+    <div style="display:flex;gap:10px;justify-content:flex-end">
+      <button id="del-cancel" style="background:#f1f3f4;border:none;border-radius:8px;padding:8px 20px;font-size:13px;font-weight:700;cursor:pointer">Cancelar</button>
+      <button id="del-confirm" style="background:#c5221f;color:#fff;border:none;border-radius:8px;padding:8px 20px;font-size:13px;font-weight:700;cursor:pointer">Excluir</button>
+    </div>
+  </div>`;
+  document.body.appendChild(overlay);
+  document.getElementById('del-cancel').onclick = () => document.body.removeChild(overlay);
+  document.getElementById('del-confirm').onclick = () => {
+    document.body.removeChild(overlay);
+    logChange('EXCLUSÃO', item, [{campo:'Status', de:item.status, para:'—'},{campo:'Responsável', de:item.resp||'—', para:'—'}]);
+    // If deleting a subproject, also delete all its children
+    if(isSubproject(item.num)){
+      const children = DATA.filter(d => d.num.startsWith(item.num + '.'));
+      children.forEach(c => logChange('EXCLUSÃO', c, [{campo:'Status', de:c.status, para:'—'}]));
+      DATA = DATA.filter(d => d.id !== id && !d.num.startsWith(item.num + '.'));
+    } else {
+      DATA = DATA.filter(d => d.id !== id);
+    }
+    if(EDIT_ID === id) EDIT_ID = null;
+    // Save immediately and wait for confirmation
+    const saveEl = document.getElementById('save-indicator');
+    if(saveEl){ saveEl.style.display='flex'; saveEl.textContent='⏳ Excluindo e salvando...'; saveEl.style.background='#fce8e6'; saveEl.style.color='#c5221f'; }
+    db.collection('painel').doc('dados').set({
+      data: DATA,
+      audit: AUDIT_LOG,
+      canceled: [...CANCELED_PROJECTS],
+      updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+    }).then(()=>{
+      if(saveEl){ saveEl.textContent='✓ Excluído e salvo!'; saveEl.style.background='#e6f4ea'; saveEl.style.color='#1a7a34'; setTimeout(()=>saveEl.style.display='none',3000); }
+      toast('Item excluído!');
+      render();
+    }).catch(err=>{
+      if(saveEl){ saveEl.textContent='⚠ Erro ao salvar: '+err.message; saveEl.style.background='#fce8e6'; saveEl.style.color='#c5221f'; }
+      toast('Item excluído localmente - erro ao salvar na nuvem','err');
+      render();
+    });
+  };
+}
+
+function toggleCronoResp(r){
+  if(r==='all'){ CRONO_RESP = new Set(); }
+  else { if(CRONO_RESP.has(r)) CRONO_RESP.delete(r); else CRONO_RESP.add(r); }
+  render();
+}
+function setCronoDays(d){ CRONO_DAYS = d; render(); }
+
+function navigateToListFilter(projNum, status){
+  // Set filters
+  FL_STATUS = new Set([status]);
+  FL_RESP   = new Set();
+  FILTER_PROJ_DASH = projNum; // expand this project
+  // expand the project in the list view
+  EXPANDED['p_'+projNum] = true;
+  // expand all subprojects of this project too
+  DATA.filter(d=>isSubproject(d.num)&&getProject(d.num)===projNum).forEach(d=>{
+    EXPANDED['s_'+d.num] = true;
+  });
+  setView('list');
+  // scroll to top after render
+  setTimeout(()=>{ window.scrollTo({top:0,behavior:'smooth'}); }, 100);
+}
+
+function toggleChartDrill(nameKey, status){
+  if(window.CHART_DRILL && window.CHART_DRILL.nameKey===nameKey && window.CHART_DRILL.status===status){
+    window.CHART_DRILL = null;
+let DASH_G_TIPO = 'all'; // gerencial filter
+window.HIGHLIGHT_ID = null;
+window.HIST_FILTER_TYPE = 'all';
+window.HIST_FILTER_DATE = '';
+
+// ── AUDIT LOG ─────────────────────────────────────────────────────
+let AUDIT_LOG = (()=>{
+  try { const s = localStorage.getItem('paula_audit'); return s ? JSON.parse(s) : []; } catch(e){ return []; }
+})();
+
+function saveAudit(){
+  try{ localStorage.setItem('paula_audit', JSON.stringify(AUDIT_LOG)); }catch(e){}
+  saveToFirebase();
+}
+
+function nowStr(){
+  return new Date().toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'});
+}
+
+function logChange(tipo, item, changes){
+  // Skip logging for 'rotina' projects
+  const projTipo = (DATA.find(x=>x.num===getProject(item.num))?.tipo) || item.tipo || 'governanca';
+  if(projTipo === 'rotina') return;
+
+  // tipo: 'INCLUSÃO' | 'EXCLUSÃO' | 'ALTERAÇÃO'
+  const entry = {
+    id: Date.now(),
+    data: nowStr(),
+    tipo,
+    num: item.num,
+    nome: item.nome,
+    changes // array of {campo, de, para}
+  };
+  AUDIT_LOG.unshift(entry); // newest first
+  if(AUDIT_LOG.length > 500) AUDIT_LOG = AUDIT_LOG.slice(0,500); // keep last 500
+  saveAudit();
+}
+
+function fieldLabel(f){
+  const map = {status:'Status', pct:'% Concluída', fim:'Prazo', resp:'Responsável', notas:'Notas', nome:'Nome', num:'Número'};
+  return map[f] || f;
+}
+function fieldFmt(f, v){
+  if(f==='pct') return Math.round((parseFloat(v)||0)*100)+'%';
+  if(f==='fim'){ const d=xlDate(parseFloat(v)); return d?d.toLocaleDateString('pt-BR'):'—'; }
+  return v||'—';
+}
+let CRONO_RESP = new Set();
+let CRONO_DAYS = 30; // default: next 30 days
+  } else {
+    window.CHART_DRILL = {nameKey, status};
+  }
+  render();
+  // scroll to drill panel
+  setTimeout(()=>{
+    const el = document.querySelector('.card[style*="border:2px"]');
+    if(el) el.scrollIntoView({behavior:'smooth', block:'start'});
+  }, 100);
+}
+
+
+function renderCronograma(){
+  const today = new Date(); today.setHours(0,0,0,0);
+  const allNames = allRespNames();
+
+  // Only active items (Em andamento + Não iniciada + Atrasada), with a fim date
+  const itemsWithDate = DATA.filter(d => {
+    if(!['Em andamento','Não iniciada','Atrasada'].includes(d.status)) return false;
+    if(CANCELED_PROJECTS.has(getProject(d.num))) return false;
+    return d.fim && !isNaN(d.fim);
+  }).map(d => ({...d, fimDate: xlDate(d.fim)}))
+    .sort((a,b) => a.fimDate - b.fimDate);
+
+  // Apply resp filter
+  const respOk = CRONO_RESP.size === 0;
+  const filtered = itemsWithDate.filter(d => {
+    if(!respOk && (!d.resp || !CRONO_RESP.has(d.resp.trim()))) return false;
+    return true;
+  });
+
+  // Group: overdue, today, this week, next periods
+  const overdue   = filtered.filter(d => daysLeft(d.fimDate) < 0);
+  const upcoming  = filtered.filter(d => daysLeft(d.fimDate) >= 0);
+
+  // For upcoming: group by week blocks
+  function weekLabel(d){
+    const dl = daysLeft(d);
+    if(dl === 0) return 'Hoje';
+    if(dl === 1) return 'Amanhã';
+    if(dl <= 7)  return 'Próximos 7 dias';
+    if(dl <= 14) return 'Próximos 14 dias';
+    if(dl <= 30) return 'Próximos 30 dias';
+    if(dl <= 60) return 'Próximos 60 dias';
+    return 'Mais de 60 dias';
+  }
+  const groupOrder = ['Hoje','Amanhã','Próximos 7 dias','Próximos 14 dias','Próximos 30 dias','Próximos 60 dias','Mais de 60 dias'];
+
+  // Build groups
+  const groups = {};
+  upcoming.forEach(d => {
+    const lbl = weekLabel(d.fimDate);
+    if(!groups[lbl]) groups[lbl] = [];
+    groups[lbl].push(d);
+  });
+
+  // Filters UI
+  const nameBox = allNames.length ? filterBox('Responsável', allNames, CRONO_RESP,
+    "toggleCronoResp('all')", r=>`toggleCronoResp('${r.replace(/'/g,"\\'")}')`, 'cr') : '';
+
+  const dayBtns = [7,14,30,60,999].map(d => {
+    const lbl = d === 999 ? 'Todos' : `${d} dias`;
+    const active = CRONO_DAYS === d;
+    return `<button onclick="setCronoDays(${d})" style="padding:4px 14px;border:none;border-radius:20px;font-size:11px;font-weight:700;cursor:pointer;background:${active?'#1a3a5c':'#f1f3f4'};color:${active?'#fff':'#5f6368'}">${lbl}</button>`;
+  }).join('');
+
+  let html = `<div style="font-weight:800;font-size:16px;margin-bottom:14px">📅 Cronograma</div>
+  <div style="display:flex;gap:10px;margin-bottom:12px;flex-wrap:wrap;align-items:flex-start">
+    ${allNames.length ? `<div style="flex:1;min-width:200px">${nameBox}</div>` : ''}
+    <div style="background:#fff;border:1px solid #e0e3e8;border-radius:10px;padding:12px 16px;flex-shrink:0">
+      <div style="font-size:12px;font-weight:700;color:#5f6368;margin-bottom:8px">Período:</div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap">${dayBtns}</div>
+    </div>
+  </div>`;
+
+  // OVERDUE section
+  const overdueFiltered = overdue.filter(d => CRONO_DAYS === 999 || true); // always show overdue
+  if(overdueFiltered.length){
+    html += `<div style="margin-bottom:16px">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+        <div style="width:4px;height:20px;background:#ea4335;border-radius:2px"></div>
+        <span style="font-weight:800;font-size:13px;color:#c5221f">⚠ Atrasados / Vencidos</span>
+        <span style="background:#fce8e6;color:#c5221f;border-radius:10px;padding:1px 8px;font-size:11px;font-weight:700">${overdueFiltered.length}</span>
+      </div>
+      <div style="border-left:3px solid #ea4335;margin-left:6px;padding-left:14px;display:flex;flex-direction:column;gap:6px">
+        ${overdueFiltered.map(item => cronoItemHtml(item, today)).join('')}
+      </div>
+    </div>`;
+  }
+
+  // UPCOMING groups
+  const maxDays = CRONO_DAYS;
+  groupOrder.forEach(lbl => {
+    if(!groups[lbl]) return;
+    const items = groups[lbl];
+    // filter by selected period
+    const periodMax = {
+      'Hoje':0,'Amanhã':1,'Próximos 7 dias':7,'Próximos 14 dias':14,
+      'Próximos 30 dias':30,'Próximos 60 dias':60,'Mais de 60 dias':999
+    }[lbl];
+    if(maxDays !== 999 && periodMax > maxDays) return;
+
+    const dotColor = lbl==='Hoje'?'#ea4335':lbl==='Amanhã'?'#fbbc04':lbl.includes('7')||lbl.includes('14')?'#4285f4':'#34a853';
+    html += `<div style="margin-bottom:16px">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+        <div style="width:4px;height:20px;background:${dotColor};border-radius:2px"></div>
+        <span style="font-weight:800;font-size:13px">${lbl}</span>
+        <span style="background:#f1f3f4;color:#5f6368;border-radius:10px;padding:1px 8px;font-size:11px;font-weight:700">${items.length}</span>
+      </div>
+      <div style="border-left:3px solid ${dotColor};margin-left:6px;padding-left:14px;display:flex;flex-direction:column;gap:6px">
+        ${items.map(item => cronoItemHtml(item, today)).join('')}
+      </div>
+    </div>`;
+  });
+
+  if(!overdueFiltered.length && !Object.keys(groups).length){
+    html += `<div class="empty">Nenhuma atividade encontrada para o período selecionado.</div>`;
+  }
+
+  return html;
+}
+
+function cronoItemHtml(item, today){
+  const dl = daysLeft(item.fimDate);
+  const c  = SC[item.status] || SC['Não iniciada'];
+  const pnum = getProject(item.num);
+  const snum = getSubproject(item.num);
+  const projName = DATA.find(d => d.num === pnum)?.nome || '';
+  const dlLabel = dl < 0 ? `${Math.abs(dl)}d atraso` : dl === 0 ? 'Hoje' : dl === 1 ? 'Amanhã' : `${dl}d`;
+  const dlColor = dl < 0 ? '#c5221f' : dl <= 1 ? '#b06000' : dl <= 7 ? '#1a56cc' : '#34a853';
+  const dlBg    = dl < 0 ? '#fce8e6' : dl <= 1 ? '#fff8e1' : dl <= 7 ? '#e8f0fe' : '#e6f4ea';
+
+  return `<div
+    onclick="goToItem('${pnum}','${snum||''}','${item.id}')"
+    title="Abrir na aba Projetos"
+    style="background:#fff;border-radius:10px;border:1px solid #e8eaed;padding:10px 14px;display:flex;align-items:center;gap:10px;cursor:pointer;transition:all .15s"
+    onmouseover="this.style.boxShadow='0 2px 12px rgba(26,90,204,.15)';this.style.borderColor='#4285f4'"
+    onmouseout="this.style.boxShadow='';this.style.borderColor='#e8eaed'">
+    <span style="width:8px;height:8px;border-radius:50%;background:${c.dot};flex-shrink:0;display:inline-block"></span>
+    <div style="flex:1;min-width:0">
+      <div style="font-size:12px;font-weight:700;color:#1c1e21;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(item.nome)}</div>
+      <div style="font-size:10px;color:#9aa0a6;margin-top:2px;display:flex;gap:6px;flex-wrap:wrap;align-items:center">
+        <span style="background:#f1f3f4;padding:1px 6px;border-radius:4px;font-weight:600">${esc(item.num)}</span>
+        ${projName ? `<span>${esc(projName)}</span>` : ''}
+        ${item.resp ? avChip(item.resp, 16) : ''}
+      </div>
+    </div>
+    <div style="display:flex;align-items:center;gap:8px;flex-shrink:0">
+      ${badge(item.status)}
+      <span style="font-size:11px;color:#5f6368;white-space:nowrap">${fmt(item.fimDate)}</span>
+      <span style="background:${dlBg};color:${dlColor};border-radius:10px;padding:2px 8px;font-size:10px;font-weight:800;white-space:nowrap">${dlLabel}</span>
+      <span style="font-size:10px;color:#4285f4;font-weight:700">↗</span>
+    </div>
+  </div>`;
+}
+
+function goToItem(pnum, snum, itemId){
+  // reset list filters
+  FL_STATUS = new Set(ALL_STATUSES);
+  FL_RESP   = new Set();
+  // expand project and subproject
+  EXPANDED['p_'+pnum] = true;
+  if(snum) EXPANDED['s_'+snum] = true;
+  // highlight item
+  window.HIGHLIGHT_ID = parseInt(itemId);
+  setView('list');
+  // scroll to item after render
+  setTimeout(()=>{
+    const el = document.getElementById('item-'+itemId);
+    if(el){
+      el.scrollIntoView({behavior:'smooth', block:'center'});
+      el.style.transition = 'background .3s';
+      el.style.background = '#fff9c4';
+      setTimeout(()=>{ el.style.background=''; window.HIGHLIGHT_ID=null; }, 2500);
+    }
+  }, 150);
+}
+
+
+function renderHistorico(){
+  let HIST_FILTER_TYPE = window.HIST_FILTER_TYPE || 'all';
+  let HIST_FILTER_DATE = window.HIST_FILTER_DATE || '';
+
+  const tipos = ['all','INCLUSÃO','ALTERAÇÃO','EXCLUSÃO'];
+
+  // Apply filters
+  let entries = AUDIT_LOG;
+  if(HIST_FILTER_TYPE !== 'all') entries = entries.filter(e=>e.tipo===HIST_FILTER_TYPE);
+  if(HIST_FILTER_DATE) entries = entries.filter(e=>e.data.startsWith(HIST_FILTER_DATE));
+
+  // Group by date (dd/mm/yyyy)
+  const byDate = {};
+  entries.forEach(e=>{
+    const d = e.data.split(' ')[0]; // dd/mm/yyyy
+    if(!byDate[d]) byDate[d]=[];
+    byDate[d].push(e);
+  });
+  const dates = Object.keys(byDate).sort((a,b)=>{
+    const pa=a.split('/').reverse().join(''), pb=b.split('/').reverse().join('');
+    return pb.localeCompare(pa);
+  });
+
+  const typeColors = {
+    'INCLUSÃO': {bg:'#e6f4ea',tx:'#1a7a34',icon:'➕'},
+    'ALTERAÇÃO':{bg:'#e8f0fe',tx:'#1a56cc',icon:'✏'},
+    'EXCLUSÃO': {bg:'#fce8e6',tx:'#c5221f',icon:'🗑'},
+  };
+
+  // Type filter pills
+  const typePills = tipos.map(t=>{
+    const active = HIST_FILTER_TYPE===t;
+    const c = typeColors[t];
+    return `<button onclick="setHistFilter('type','${t}')"
+      style="padding:4px 14px;border:none;border-radius:20px;font-size:11px;font-weight:700;cursor:pointer;
+      background:${active?(c?c.bg:'#1a3a5c'):'#f1f3f4'};color:${active?(c?c.tx:'#fff'):'#5f6368'}">
+      ${c?c.icon+' ':''} ${t==='all'?'Todos':t}
+    </button>`;
+  }).join('');
+
+  // Export button
+  const exportBtn = `<button onclick="exportAudit()"
+    style="background:#1a3a5c;color:#fff;border:none;border-radius:8px;padding:7px 16px;font-size:12px;font-weight:700;cursor:pointer">
+    ⬇ Exportar para PMO
+  </button>`;
+
+  const clearBtn = `<button onclick="clearAllAudit()"
+    style="background:#fce8e6;color:#c5221f;border:none;border-radius:8px;padding:7px 16px;font-size:12px;font-weight:700;cursor:pointer">
+    🗑 Limpar tudo
+  </button>`;
+
+  let html = `<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:10px">
+    <div style="font-weight:800;font-size:16px">📋 Histórico de Alterações</div>
+    <div style="display:flex;gap:8px">${exportBtn}${AUDIT_LOG.length?clearBtn:''}</div>
+  </div>
+
+  <div style="background:#fff;border:1px solid #e0e3e8;border-radius:10px;padding:12px 16px;margin-bottom:14px">
+    <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;justify-content:space-between">
+      <div>
+        <div style="font-size:12px;font-weight:700;color:#5f6368;margin-bottom:8px">Tipo de operação:</div>
+        <div style="display:flex;gap:6px;flex-wrap:wrap">${typePills}</div>
+      </div>
+      <div>
+        <div style="font-size:12px;font-weight:700;color:#5f6368;margin-bottom:8px">Filtrar por data:</div>
+        <input type="date" onchange="setHistFilter('date',this.value)"
+          value="${HIST_FILTER_DATE}"
+          style="padding:6px 10px;border:1px solid #dadce0;border-radius:7px;font-size:12px">
+        ${HIST_FILTER_DATE?`<button onclick="setHistFilter('date','')" style="margin-left:6px;background:#f1f3f4;border:none;border-radius:6px;padding:6px 10px;cursor:pointer;font-size:11px">✕ Limpar</button>`:''}
+      </div>
+    </div>
+  </div>`;
+
+  if(!entries.length){
+    html += `<div class="empty">${AUDIT_LOG.length?'Nenhuma alteração encontrada com esses filtros.':'Nenhuma alteração registrada ainda. As alterações aparecerão aqui conforme você editar, incluir ou excluir itens.'}</div>`;
+    return html;
+  }
+
+  html += `<div style="font-size:12px;color:#9aa0a6;margin-bottom:12px">${entries.length} registro(s) encontrado(s)</div>`;
+
+  dates.forEach(date=>{
+    const dayEntries = byDate[date];
+    html += `<div style="margin-bottom:20px">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
+        <div style="height:1px;flex:1;background:#e0e3e8"></div>
+        <span style="background:#1a3a5c;color:#fff;border-radius:20px;padding:3px 14px;font-size:11px;font-weight:700;white-space:nowrap">📅 ${date}</span>
+        <div style="height:1px;flex:1;background:#e0e3e8"></div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:8px">`;
+
+    dayEntries.forEach(e=>{
+      const c = typeColors[e.tipo] || {bg:'#f1f3f4',tx:'#5f6368',icon:'•'};
+      const time = e.data.split(' ')[1] || '';
+      html += `<div style="background:#fff;border-radius:10px;border:1px solid #e8eaed;overflow:hidden">
+        <div style="display:flex;align-items:center;gap:10px;padding:10px 14px;border-bottom:${e.changes?.length?'1px solid #f1f3f4':'none'}">
+          <span style="background:${c.bg};color:${c.tx};border-radius:8px;padding:3px 10px;font-size:11px;font-weight:800;white-space:nowrap">${c.icon} ${e.tipo}</span>
+          <div style="flex:1;min-width:0">
+            <span style="font-weight:700;font-size:13px">${esc(e.nome)}</span>
+            <span style="font-size:11px;color:#9aa0a6;margin-left:6px">${esc(e.num)}</span>
+          </div>
+          <span style="font-size:11px;color:#9aa0a6;white-space:nowrap">🕐 ${time}</span>
+          <button onclick="deleteAuditEntry(${e.id})" title="Remover do histórico"
+            style="background:#f1f3f4;border:none;border-radius:6px;padding:3px 8px;color:#9aa0a6;font-size:11px;cursor:pointer;flex-shrink:0"
+            onmouseover="this.style.background='#fce8e6';this.style.color='#c5221f'"
+            onmouseout="this.style.background='#f1f3f4';this.style.color='#9aa0a6'">✕</button>
+        </div>`;
+
+      if(e.changes && e.changes.length){
+        html += `<div style="padding:8px 14px;display:flex;flex-direction:column;gap:6px">`;
+        e.changes.forEach(ch=>{
+          html += `<div style="display:flex;align-items:center;gap:8px;font-size:12px;flex-wrap:wrap">
+            <span style="font-weight:700;color:#5f6368;min-width:90px">${esc(ch.campo)}</span>
+            <span style="background:#fce8e6;color:#c5221f;padding:2px 8px;border-radius:6px;text-decoration:line-through">${esc(ch.de)}</span>
+            <span style="color:#9aa0a6">→</span>
+            <span style="background:#e6f4ea;color:#1a7a34;padding:2px 8px;border-radius:6px;font-weight:600">${esc(ch.para)}</span>
+          </div>`;
+        });
+        html += `</div>`;
+      }
+      html += `</div>`;
+    });
+
+    html += `</div></div>`;
+  });
+
+  return html;
+}
+
+
+function exportToExcel(){
+  if(typeof XLSX === 'undefined'){
+    alert('A biblioteca de exportação Excel não pôde ser carregada.\nVerifique sua conexão com a internet e tente novamente.');
+    return;
+  }
+  const EPOCH = new Date(1899,11,30);
+
+  // Merge DATA with any older localStorage keys so rotina projects are included
+  let allData = [...DATA];
+  ['paula_v14','paula_v15','paula_v16'].forEach(key=>{
+    try{
+      const old = localStorage.getItem(key);
+      if(!old) return;
+      const parsed = JSON.parse(old);
+      parsed.forEach(item=>{
+        if(!allData.find(d=>d.id===item.id && d.num===item.num)){
+          allData.push(item);
+        }
+      });
+    }catch(e){}
+  });
+
+  // Build rows
+  const rows = [];
+
+  // Header — now includes Tipo
+  rows.push([
+    'Número','Nome','Nível','Projeto Pai','Tipo','Status','% Concluída',
+    'Data Início','Data Prazo','Responsável','Notas'
+  ]);
+
+  // Sort by num
+  allData.sort((a,b)=>{
+    const pa = a.num.split('.').map(n=>n.padStart(4,'0')).join('.');
+    const pb = b.num.split('.').map(n=>n.padStart(4,'0')).join('.');
+    return pa.localeCompare(pb);
+  });
+
+  allData.forEach(d=>{
+    if(CANCELED_PROJECTS.has(getProject(d.num))) return;
+    const parts = d.num.split('.');
+    let nivel = parts.length===1?'Projeto':parts.length===2?'Subprojeto':'Ação';
+    const projPai = parts.length>1 ? (allData.find(x=>x.num===parts[0])?.nome||parts[0]) : '';
+    const projTipo = (allData.find(x=>x.num===parts[0])?.tipo)||d.tipo||'governanca';
+    const tipoLabel = projTipo==='rotina'?'Rotina':'Governança';
+    const ini = d.ini ? new Date(EPOCH.getTime()+Math.round(d.ini*86400000)) : null;
+    const fim = d.fim ? new Date(EPOCH.getTime()+Math.round(d.fim*86400000)) : null;
+    const fmtD = dt => dt ? dt.toLocaleDateString('pt-BR') : '';
+
+    rows.push([
+      d.num, d.nome, nivel, projPai, tipoLabel,
+      d.status, Math.round((d.pct||0)*100)+'%',
+      fmtD(ini), fmtD(fim), d.resp||'', d.notas||''
+    ]);
+  });
+
+  // Create workbook
+  const wb = XLSX.utils.book_new();
+  const ws = XLSX.utils.aoa_to_sheet(rows);
+
+  // Column widths
+  ws['!cols'] = [
+    {wch:10},{wch:55},{wch:12},{wch:35},{wch:12},{wch:16},{wch:12},
+    {wch:14},{wch:14},{wch:20},{wch:40}
+  ];
+
+  // Style header
+  const headerRange = XLSX.utils.decode_range(ws['!ref']);
+  for(let C=headerRange.s.c; C<=headerRange.e.c; C++){
+    const cellAddr = XLSX.utils.encode_cell({r:0,c:C});
+    if(!ws[cellAddr]) continue;
+    ws[cellAddr].s = {
+      font:{bold:true,color:{rgb:'FFFFFF'}},
+      fill:{fgColor:{rgb:'1A3A5C'}},
+      alignment:{horizontal:'center'}
+    };
+  }
+  ws['!freeze'] = {xSplit:0, ySplit:1};
+  XLSX.utils.book_append_sheet(wb, ws, 'Projetos');
+
+  // Summary sheet — split by tipo
+  const sumRows = [['Tipo','Projeto','Status','Total Itens','Concluídos','Em Andamento','Atrasados','Não Iniciados','% Geral']];
+  allData.filter(d=>isProject(d.num)&&!CANCELED_PROJECTS.has(d.num))
+    .sort((a,b)=>{
+      const ta=a.tipo||'governanca', tb=b.tipo||'governanca';
+      if(ta!==tb) return ta.localeCompare(tb);
+      return (+a.num)-(+b.num);
+    })
+    .forEach(p=>{
+      const kids = allData.filter(d=>getProject(d.num)===p.num);
+      const total=kids.length, done=kids.filter(d=>d.status==='Concluída').length;
+      const prog=kids.filter(d=>d.status==='Em andamento').length;
+      const late=kids.filter(d=>d.status==='Atrasada').length;
+      const notst=kids.filter(d=>d.status==='Não iniciada').length;
+      const pct=total?Math.round(done/total*100)+'%':'0%';
+      const tipoLabel=(p.tipo||'governanca')==='rotina'?'Rotina':'Governança';
+      sumRows.push([tipoLabel, p.num+' — '+p.nome, p.status, total, done, prog, late, notst, pct]);
+    });
+  const ws2 = XLSX.utils.aoa_to_sheet(sumRows);
+  ws2['!cols'] = [{wch:12},{wch:45},{wch:16},{wch:12},{wch:12},{wch:14},{wch:12},{wch:14},{wch:10}];
+  XLSX.utils.book_append_sheet(wb, ws2, 'Resumo por Projeto');
+
+  // Download
+  const date = new Date().toLocaleDateString('pt-BR').replace(/\//g,'-');
+  XLSX.writeFile(wb, `backup-projetos-paula-${date}.xlsx`);
+  toast('Excel exportado com sucesso!');
+}
+
+function deleteAuditEntry(id){
+  AUDIT_LOG = AUDIT_LOG.filter(e => e.id !== id);
+  saveAudit();
+  render();
+}
+
+function clearAllAudit(){
+  const overlay = document.createElement('div');
+  overlay.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.5);z-index:99999;display:flex;align-items:center;justify-content:center';
+  overlay.innerHTML = `<div style="background:#fff;border-radius:14px;padding:28px 32px;max-width:400px;width:90%;box-shadow:0 8px 40px rgba(0,0,0,.25)">
+    <div style="font-weight:800;font-size:15px;margin-bottom:8px;color:#c5221f">🗑 Limpar todo o histórico?</div>
+    <div style="font-size:13px;color:#3c4043;margin-bottom:20px">Todos os ${AUDIT_LOG.length} registros serão removidos permanentemente.</div>
+    <div style="display:flex;gap:10px;justify-content:flex-end">
+      <button id="clr-cancel" style="background:#f1f3f4;border:none;border-radius:8px;padding:8px 20px;font-size:13px;font-weight:700;cursor:pointer">Cancelar</button>
+      <button id="clr-confirm" style="background:#c5221f;color:#fff;border:none;border-radius:8px;padding:8px 20px;font-size:13px;font-weight:700;cursor:pointer">Limpar tudo</button>
+    </div>
+  </div>`;
+  document.body.appendChild(overlay);
+  document.getElementById('clr-cancel').onclick = () => document.body.removeChild(overlay);
+  document.getElementById('clr-confirm').onclick = () => {
+    document.body.removeChild(overlay);
+    AUDIT_LOG = [];
+    saveAudit();
+    toast('Histórico limpo!');
+    render();
+  };
+}
+
+function setHistFilter(type, val){
+  if(type==='type') window.HIST_FILTER_TYPE = val;
+  else window.HIST_FILTER_DATE = val;
+  render();
+}
+
+function exportAudit(){
+  let txt = 'RELATÓRIO DE ALTERAÇÕES — PAINEL PAULA ORTOLANI\n';
+  txt += '='.repeat(55) + '\n';
+  txt += `Gerado em: ${new Date().toLocaleString('pt-BR')}\n`;
+  txt += '='.repeat(55) + '\n\n';
+
+  // Group by date
+  const byDate = {};
+  AUDIT_LOG.forEach(e=>{
+    const d=e.data.split(' ')[0];
+    if(!byDate[d]) byDate[d]=[];
+    byDate[d].push(e);
+  });
+  const dates = Object.keys(byDate).sort((a,b)=>{
+    const pa=a.split('/').reverse().join(''), pb=b.split('/').reverse().join('');
+    return pb.localeCompare(pa);
+  });
+
+  dates.forEach(date=>{
+    txt += `\n📅 ${date}\n` + '-'.repeat(40) + '\n';
+    byDate[date].forEach(e=>{
+      const time = e.data.split(' ')[1]||'';
+      txt += `\n[${e.tipo}] ${e.num} — ${e.nome} (${time})\n`;
+      if(e.changes && e.changes.length){
+        e.changes.forEach(ch=>{
+          txt += `  • ${ch.campo}: "${ch.de}" → "${ch.para}"\n`;
+        });
+      }
+    });
+  });
+
+  // Download as .txt
+  const blob = new Blob([txt], {type:'text/plain;charset=utf-8'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `historico-alteracoes-${new Date().toLocaleDateString('pt-BR').replace(/\//g,'-')}.txt`;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+
+// ── PERSISTENT SAVE (embed in HTML file) ─────────────────────────
+let _autoSaveTimer = null;
+function save(){
+  // Save to localStorage immediately
+  try{ localStorage.setItem('paula_v17', JSON.stringify(DATA)); }catch(e){}
+  // Show saving indicator
+  const el = document.getElementById('save-indicator');
+  if(el){ el.style.display='flex'; el.textContent='⏳ Salvando...'; el.style.background='#e8f0fe'; el.style.color='#1a56cc'; }
+  // Debounce Firebase save - wait 1.5s after last change
+  clearTimeout(_autoSaveTimer);
+  _autoSaveTimer = setTimeout(()=>{ saveToFirebase(); }, 1500);
+}
+
+function saveToFirebase(){
+  const el = document.getElementById('save-indicator');
+  if(el){ el.style.display='flex'; el.textContent='⏳ Salvando...'; el.style.background='#e8f0fe'; el.style.color='#1a56cc'; }
+  db.collection('painel').doc('dados').set({
+    data: DATA,
+    audit: AUDIT_LOG,
+    canceled: [...CANCELED_PROJECTS],
+    updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+  })
+  .then(()=>{
+    _autoSaveTimer = null;
+    if(el){ el.textContent='✓ Salvo na nuvem'; el.style.background='#e6f4ea'; el.style.color='#1a7a34';
+      setTimeout(()=>{ el.style.display='none'; }, 3000); }
+  })
+  .catch(err=>{
+    if(el){ el.textContent='⚠ Erro: '+err.message; el.style.background='#fce8e6'; el.style.color='#c5221f'; }
+  });
+}
+
+
+function saveAudit(){
+  try{ localStorage.setItem('paula_audit', JSON.stringify(AUDIT_LOG)); }catch(e){}
+}
+
+// updateSaveIndicator removed
+
+function downloadUpdatedFile(){
+  // No longer needed - data is saved to Firebase automatically
+  toast('Seus dados são salvos automaticamente na nuvem! ☁️');
+}
+
+function loadFromFirebase(){
+  const el = document.getElementById('save-indicator');
+  if(el){ el.style.display='flex'; el.textContent='⏳ Carregando dados da nuvem...'; el.style.background='#e8f0fe'; el.style.color='#1a56cc'; }
+  db.collection('painel').doc('dados').get()
+  .then(doc=>{
+    if(doc.exists){
+      const d = doc.data();
+      if(d.data && d.data.length > 0){
+        DATA = d.data;
+        try{ localStorage.setItem('paula_v17', JSON.stringify(DATA)); }catch(e){}
+      }
+      if(d.audit) AUDIT_LOG = d.audit;
+      if(d.canceled) CANCELED_PROJECTS = new Set(d.canceled);
+      if(el){ el.textContent='✓ Dados carregados da nuvem'; el.style.background='#e6f4ea'; el.style.color='#1a7a34';
+        setTimeout(()=>{ el.style.display='none'; }, 2000); }
+      render();
+    } else {
+      // First time - save current RAW data to Firebase
+      if(el){ el.textContent='☁️ Primeira vez - enviando dados para nuvem...'; el.style.background='#fff8e1'; el.style.color='#b06000'; }
+      saveToFirebase();
+      if(el){ setTimeout(()=>{ el.style.display='none'; }, 3000); }
+    }
+  })
+  .catch(err=>{
+    if(el){ el.textContent='⚠ Sem conexão - usando dados locais'; el.style.background='#fff8e1'; el.style.color='#b06000';
+      setTimeout(()=>{ el.style.display='none'; }, 3000); }
+    render();
+  });
+}
+
+function buildAndDownload(){
+  // Can't read file directly (CORS), so just trigger download with current page source
+  // which already has the original data — user must use this after opening from server
+  // For local file, we reconstruct from template
+  alert('Para salvar, use o botão Salvar Arquivo logo após cada sessão de edições.');
+}
+
+
+// fixRespNames removed - using 'Paula' as standard name
+
+
+function renderGerencial(){
+  const allProjs = DATA.filter(d=>isProject(d.num)&&!CANCELED_PROJECTS.has(String(d.num)));
+
+  // apply tipo filter
+  const projs = DASH_G_TIPO==='all' ? allProjs : allProjs.filter(p=>(p.tipo||'governanca')===DASH_G_TIPO);
+  const items = DATA.filter(d=>!CANCELED_PROJECTS.has(String(getProject(d.num))) &&
+    (DASH_G_TIPO==='all' || (DATA.find(p=>p.num===getProject(d.num))?.tipo||'governanca')===DASH_G_TIPO));
+
+  // Status counts
+  const statusCounts = {};
+  ALL_STATUSES.forEach(s=>{ statusCounts[s]=items.filter(i=>i.status===s).length; });
+  const totalItems = items.length;
+
+  // Resp data
+  const respMap = {};
+  items.filter(i=>i.resp&&i.resp.trim()).forEach(i=>{
+    const r=i.resp.trim();
+    if(!respMap[r]) respMap[r]={total:0,concluida:0,andamento:0,atrasada:0,nao:0};
+    respMap[r].total++;
+    if(i.status==='Concluída') respMap[r].concluida++;
+    else if(i.status==='Em andamento') respMap[r].andamento++;
+    else if(i.status==='Atrasada') respMap[r].atrasada++;
+    else if(i.status==='Não iniciada') respMap[r].nao++;
+  });
+  const respNames = Object.keys(respMap).sort();
+
+  // Gantt data - projects with dates
+  const ganttProjs = projs.filter(p=>p.ini&&p.fim).sort((a,b)=>a.ini-b.ini);
+  const ganttAll  = projs.sort((a,b)=>+a.num-+b.num);
+
+  // tipo filter pills
+  const tipoPills = ['all','governanca','rotina'].map(t=>{
+    const active=DASH_G_TIPO===t;
+    const bg=active?(t==='rotina'?'#1a6644':'#1a3a5c'):'#f1f3f4';
+    const tx=active?'#fff':'#5f6368';
+    const lbl=t==='all'?'Todos':t==='governanca'?'GOVERNANÇA':'ROTINA';
+    return `<button onclick="setGTipo('${t}')" style="padding:4px 14px;border:none;border-radius:20px;font-size:11px;font-weight:700;cursor:pointer;background:${bg};color:${tx}">${lbl}</button>`;
+  }).join('');
+
+  // ── DONUT CHART (SVG) ─────────────────────────────────────────
+  const donutColors = {'Concluída':'#34a853','Em andamento':'#4285f4','Atrasada':'#ea4335','Não iniciada':'#9aa0a6','Standby':'#fbbc04','Cancelada':'#ab47bc'};
+  const donutData = ALL_STATUSES.map(s=>({s,v:statusCounts[s]||0,c:donutColors[s]})).filter(d=>d.v>0);
+  const total2 = donutData.reduce((a,d)=>a+d.v,0);
+  let donutSVG = '';
+  let angle = -Math.PI/2;
+  const cx=120,cy=120,r=80,ri=50;
+  donutData.forEach(d=>{
+    const sweep = (d.v/total2)*2*Math.PI;
+    const x1=cx+r*Math.cos(angle), y1=cy+r*Math.sin(angle);
+    const x2=cx+r*Math.cos(angle+sweep), y2=cy+r*Math.sin(angle+sweep);
+    const xi1=cx+ri*Math.cos(angle), yi1=cy+ri*Math.sin(angle);
+    const xi2=cx+ri*Math.cos(angle+sweep), yi2=cy+ri*Math.sin(angle+sweep);
+    const large=sweep>Math.PI?1:0;
+    const pct=Math.round(d.v/total2*100);
+    donutSVG+=`<path d="M${xi1.toFixed(1)},${yi1.toFixed(1)} L${x1.toFixed(1)},${y1.toFixed(1)} A${r},${r} 0 ${large},1 ${x2.toFixed(1)},${y2.toFixed(1)} L${xi2.toFixed(1)},${yi2.toFixed(1)} A${ri},${ri} 0 ${large},0 ${xi1.toFixed(1)},${yi1.toFixed(1)} Z"
+      fill="${d.c}" opacity="0.9" style="cursor:pointer;transition:opacity .2s"
+      onmouseover="this.style.opacity='1';document.getElementById('donut-tip').textContent='${esc(d.s)}: ${d.v} (${pct}%)'"
+      onmouseout="this.style.opacity='0.9';document.getElementById('donut-tip').textContent=''"
+      onclick="navigateToListFilter('all','${d.s}')"/>`;
+    angle+=sweep;
+  });
+  // Legend
+  let legend='';
+  donutData.forEach(d=>{
+    const pct=Math.round(d.v/total2*100);
+    legend+=`<div style="display:flex;align-items:center;gap:6px;margin-bottom:4px;cursor:pointer" onclick="navigateToListFilter('all','${d.s}')">
+      <span style="width:10px;height:10px;border-radius:50%;background:${d.c};flex-shrink:0;display:inline-block"></span>
+      <span style="font-size:11px;color:#3c4043">${esc(d.s)}</span>
+      <span style="font-size:11px;font-weight:700;color:#1c1e21;margin-left:auto">${d.v} <span style="color:#9aa0a6;font-weight:400">(${pct}%)</span></span>
+    </div>`;
+  });
+
+  // ── BAR CHART (Responsáveis) ──────────────────────────────────
+  const maxBar = Math.max(...respNames.map(r=>respMap[r].total),1);
+  const BAR_W=500, BAR_H_EACH=28, BAR_GAP=8, LABEL_W=100;
+  const barH = respNames.length*(BAR_H_EACH+BAR_GAP)+20;
+  let barSVG='';
+  respNames.forEach((name,i)=>{
+    const d=respMap[name];
+    const y=20+i*(BAR_H_EACH+BAR_GAP);
+    const av=avatar(name);
+    barSVG+=`<text x="${LABEL_W-6}" y="${y+BAR_H_EACH/2+4}" text-anchor="end" font-size="11" font-weight="700" fill="#1c1e21">${esc(name.split(' ')[0])}</text>`;
+    let x=0;
+    [['concluida','#34a853'],['andamento','#4285f4'],['atrasada','#ea4335'],['nao','#9aa0a6']].forEach(([k,col])=>{
+      const cnt=d[k]; if(!cnt) return;
+      const w=Math.round((cnt/maxBar)*BAR_W);
+      const status=k==='concluida'?'Concluída':k==='andamento'?'Em andamento':k==='atrasada'?'Atrasada':'Não iniciada';
+      barSVG+=`<rect x="${LABEL_W+x}" y="${y}" width="${w}" height="${BAR_H_EACH}" fill="${col}" rx="3" style="cursor:pointer;transition:opacity .2s"
+        onmouseover="this.style.opacity='.7';document.getElementById('bar-tip').textContent='${esc(name)}: ${cnt} ${esc(status)}'"
+        onmouseout="this.style.opacity='1';document.getElementById('bar-tip').textContent=''"
+        onclick="filterByResp('${esc(name)}')"/>`;
+      if(w>18) barSVG+=`<text x="${LABEL_W+x+w/2}" y="${y+BAR_H_EACH/2+4}" text-anchor="middle" font-size="10" font-weight="700" fill="white" pointer-events="none">${cnt}</text>`;
+      x+=w;
+    });
+    barSVG+=`<text x="${LABEL_W+x+6}" y="${y+BAR_H_EACH/2+4}" font-size="10" fill="#5f6368">${d.total}</text>`;
+  });
+
+  // ── GANTT CHART ───────────────────────────────────────────────
+  const EPOCH = new Date(1899,11,30);
+  const today = (new Date()-EPOCH)/86400000;
+  const ganttItems = ganttAll.filter(p=>p.fim);
+  const minDate = ganttItems.length ? Math.min(...ganttItems.map(p=>p.ini||p.fim)) : today-30;
+  const maxDate = ganttItems.length ? Math.max(...ganttItems.map(p=>p.fim)) : today+30;
+  const span = Math.max(maxDate-minDate, 1);
+  const GCHART_W=580, GLABEL_W=140, GROW_H=22, GGAP=6;
+  const gH = ganttItems.length*(GROW_H+GGAP)+40;
+
+  let ganttSVG='';
+  // Today line
+  const todayX = GLABEL_W + Math.round((today-minDate)/span*GCHART_W);
+  ganttSVG+=`<line x1="${todayX}" y1="0" x2="${todayX}" y2="${gH}" stroke="#ea4335" stroke-width="1.5" stroke-dasharray="4"/>`;
+  ganttSVG+=`<text x="${todayX+3}" y="12" font-size="9" fill="#ea4335">Hoje</text>`;
+
+  ganttItems.forEach((p,i)=>{
+    const y=20+i*(GROW_H+GGAP);
+    const ini=p.ini||p.fim;
+    const x1=GLABEL_W+Math.round((ini-minDate)/span*GCHART_W);
+    const x2=GLABEL_W+Math.round((p.fim-minDate)/span*GCHART_W);
+    const w=Math.max(x2-x1,4);
+    const pct=Math.round((p.pct||0)*100);
+    const col=(p.tipo||'governanca')==='rotina'?'#1a6644':'#1a3a5c';
+    const late=p.fim<today&&p.status!=='Concluída';
+    ganttSVG+=`<text x="${GLABEL_W-4}" y="${y+GROW_H/2+4}" text-anchor="end" font-size="10" fill="#1c1e21" style="cursor:pointer" onclick="navigateToProjGantt('${p.num}')">${esc(p.num)} ${esc(p.nome.slice(0,18))}${p.nome.length>18?'…':''}</text>`;
+    ganttSVG+=`<rect x="${GLABEL_W}" y="${y}" width="${GCHART_W}" height="${GROW_H}" fill="#f1f3f4" rx="3"/>`;
+    ganttSVG+=`<rect x="${x1}" y="${y}" width="${w}" height="${GROW_H}" fill="${late?'#ea4335':col}" rx="3" opacity="0.85" style="cursor:pointer;transition:opacity .2s"
+      onmouseover="this.style.opacity='1';document.getElementById('gantt-tip').textContent='${esc(p.nome)} — ${pct}% — ${esc(p.status)}'"
+      onmouseout="this.style.opacity='.85';document.getElementById('gantt-tip').textContent=''"
+      onclick="navigateToProjGantt('${p.num}')"/>`;
+    if(w>20) ganttSVG+=`<text x="${x1+w/2}" y="${y+GROW_H/2+4}" text-anchor="middle" font-size="9" fill="white" pointer-events="none">${pct}%</text>`;
+  });
+
+  return `<div style="font-weight:800;font-size:16px;margin-bottom:14px">📊 Dashboard Gerencial</div>
+
+  <div style="display:flex;gap:8px;margin-bottom:18px;align-items:center">
+    <span style="font-size:12px;font-weight:700;color:#5f6368">Tipo:</span>
+    ${tipoPills}
+  </div>
+
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px">
+
+    <!-- DONUT -->
+    <div class="card">
+      <div class="card-title">Distribuição por Status</div>
+      <div style="display:flex;align-items:center;gap:16px">
+        <div style="position:relative;flex-shrink:0">
+          <svg width="240" height="240" viewBox="0 0 240 240">
+            ${donutSVG}
+            <text x="120" y="115" text-anchor="middle" font-size="22" font-weight="900" fill="#1c1e21">${totalItems}</text>
+            <text x="120" y="133" text-anchor="middle" font-size="11" fill="#9aa0a6">itens</text>
+          </svg>
+        </div>
+        <div style="flex:1">${legend}
+          <div id="donut-tip" style="margin-top:8px;font-size:11px;color:#1a56cc;font-weight:600;min-height:16px"></div>
+          <div style="margin-top:8px;font-size:10px;color:#9aa0a6">Clique em um segmento para filtrar</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- RESP BARS -->
+    <div class="card">
+      <div class="card-title">Progresso por Responsável</div>
+      <div style="display:flex;gap:10px;margin-bottom:8px;flex-wrap:wrap">
+        ${[['#34a853','Concluída'],['#4285f4','Em andamento'],['#ea4335','Atrasada'],['#9aa0a6','Não iniciada']].map(([c,l])=>`<span style="display:flex;align-items:center;gap:4px;font-size:10px"><span style="width:8px;height:8px;border-radius:50%;background:${c};display:inline-block"></span>${esc(l)}</span>`).join('')}
+      </div>
+      <div style="overflow-x:auto">
+        <svg width="${LABEL_W+BAR_W+40}" height="${barH}" viewBox="0 0 ${LABEL_W+BAR_W+40} ${barH}">
+          ${barSVG}
+        </svg>
+      </div>
+      <div id="bar-tip" style="font-size:11px;color:#1a56cc;font-weight:600;min-height:16px;margin-top:4px"></div>
+      <div style="font-size:10px;color:#9aa0a6;margin-top:4px">Clique em uma barra para filtrar por responsável</div>
+    </div>
+  </div>
+
+  <!-- GANTT -->
+  <div class="card">
+    <div class="card-title">📅 Linha do Tempo dos Projetos</div>
+    <div style="overflow-x:auto">
+      <svg width="${GLABEL_W+GCHART_W+20}" height="${gH}" viewBox="0 0 ${GLABEL_W+GCHART_W+20} ${gH}" style="display:block">
+        ${ganttSVG}
+      </svg>
+    </div>
+    <div id="gantt-tip" style="font-size:11px;color:#1a56cc;font-weight:600;min-height:16px;margin-top:8px"></div>
+    <div style="display:flex;gap:12px;margin-top:8px;flex-wrap:wrap">
+      <span style="display:flex;align-items:center;gap:4px;font-size:10px"><span style="width:10px;height:10px;background:#1a3a5c;border-radius:2px;display:inline-block"></span>Governança</span>
+      <span style="display:flex;align-items:center;gap:4px;font-size:10px"><span style="width:10px;height:10px;background:#1a6644;border-radius:2px;display:inline-block"></span>Rotina</span>
+      <span style="display:flex;align-items:center;gap:4px;font-size:10px"><span style="width:10px;height:10px;background:#ea4335;border-radius:2px;display:inline-block"></span>Atrasado</span>
+      <span style="display:flex;align-items:center;gap:4px;font-size:10px"><span style="width:2px;height:12px;background:#ea4335;display:inline-block"></span>Hoje</span>
+      <div style="font-size:10px;color:#9aa0a6;margin-left:auto">Clique em uma barra para ir ao projeto</div>
+    </div>
+  </div>`;
+}
+
+function setGTipo(t){ DASH_G_TIPO=t; render(); }
+
+function navigateToProjGantt(pnum){
+  FL_STATUS = new Set(ALL_STATUSES);
+  FL_RESP = new Set();
+  EXPANDED['p_'+pnum] = true;
+  setView('list');
+  setTimeout(()=>{
+    const el = document.getElementById('item-'+DATA.find(d=>d.num===pnum)?.id);
+    if(el){ el.scrollIntoView({behavior:'smooth',block:'center'}); el.style.transition='background .3s'; el.style.background='#fff9c4'; setTimeout(()=>el.style.background='',2500); }
+  },200);
+}
+
+function filterByResp(name){
+  FL_RESP = new Set([name]);
+  FL_STATUS = new Set(ALL_STATUSES);
+  setView('list');
+}
+
+// ── main render ───────────────────────────────────────────────────
+function render(){
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+  const idx={dashboard:0,list:1,alerts:2,resp:3,canceled:4,cronograma:5,historico:6,gerencial:7}[VIEW]||0;
+  document.querySelectorAll('.nav-btn')[idx]?.classList.add('active');
+  const alerts=DATA.filter(d=>{
+    if(d.status==='Concluída'||d.status==='Cancelada') return false;
+    if(d.status==='Atrasada') return true;
+    const dl=daysLeft(xlDate(d.fim)); return dl!==null&&dl<=14;
+  });
+  document.getElementById('nav-alerts').textContent=`🔔 Alertas${alerts.length?` (${alerts.length})`:''}`;
+  let html='';
+  if(VIEW==='dashboard') html=renderDashboard();
+  else if(VIEW==='alerts') html=renderAlerts();
+  else if(VIEW==='resp') html=renderResp();
+  else if(VIEW==='canceled') html=renderCanceled();
+  else if(VIEW==='cronograma') html=renderCronograma();
+  else if(VIEW==='historico') html=renderHistorico();
+  else if(VIEW==='gerencial') html=renderGerencial();
+  else html=renderList();
+  document.getElementById('content').innerHTML=html;
+}
+// Load from Firebase on startup
+loadFromFirebase();
+
+// ── UNSAVED CHANGES WARNING ───────────────────────────────────────
+// Auto-save active via Firebase - no beforeunload warning needed
+
+// visibilitychange removed - auto-save active
+</script>
+</body>
+</html>
